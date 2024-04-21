@@ -722,9 +722,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Search
-
-'
+  m_text: FindPath
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -948,7 +946,7 @@ GameObject:
   - component: {fileID: 1621024271}
   - component: {fileID: 1621024270}
   m_Layer: 5
-  m_Name: Search
+  m_Name: FindPath
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1019,8 +1017,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 941433829}
-        m_TargetAssemblyTypeName: Searcher, Assembly-CSharp
-        m_MethodName: Search
+        m_TargetAssemblyTypeName: PathFinding.PathFinder, Assembly-CSharp
+        m_MethodName: FindPath
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

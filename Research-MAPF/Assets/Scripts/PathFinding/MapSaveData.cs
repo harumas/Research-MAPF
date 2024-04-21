@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace DefaultNamespace
+namespace PathFinding
 {
     [CreateAssetMenu(menuName = "MapData")]
     public class MapSaveData : ScriptableObject
