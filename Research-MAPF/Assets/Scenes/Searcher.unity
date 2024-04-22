@@ -185,7 +185,7 @@ Camera:
   far clip plane: 100
   field of view: 60
   orthographic: 1
-  orthographic size: 10
+  orthographic size: 11
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -210,7 +210,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0.70710677, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 23.55, z: 0}
+  m_LocalPosition: {x: 0, y: 23.55, z: 0.54}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -501,12 +501,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 941433826}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bae003f680ff44c99ff81d82b3c561c8, type: 3}
+  m_Script: {fileID: 11500000, guid: d453d5a2d9fe417d8748f5e6ab310c52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   mediator: {fileID: 941433827}
-  start: {x: 0, y: 0}
-  goal: {x: 19, y: 19}
+  agents:
+  - Start: {x: 0, y: 0}
+    Goal: {x: 4, y: 3}
+  - Start: {x: 4, y: 0}
+    Goal: {x: 3, y: 4}
   startColor: {r: 1, g: 0, b: 0, a: 1}
   endColor: {r: 0, g: 0.20392157, b: 1, a: 1}
   pathColor: {r: 0.4, g: 0.9529412, b: 0.2901961, a: 1}
@@ -539,8 +542,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ed1aee08c454e469e7e9172d7a2930, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultHeight: 20
-  defaultWidth: 20
+  defaultHeight: 5
+  defaultWidth: 5
   mapData: {fileID: 11400000, guid: d4a8d89cda1058d439d0a9bee8206f6b, type: 2}
   prefab: {fileID: 1236299213508412820, guid: d2d59c25e86df7a418d67ca0aa6576d4, type: 3}
   firstColor: {r: 1, g: 1, b: 1, a: 1}
@@ -1016,7 +1019,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 941433829}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PathFinding.SinglePathFinder, Assembly-CSharp
         m_MethodName: FindPath
         m_Mode: 1
