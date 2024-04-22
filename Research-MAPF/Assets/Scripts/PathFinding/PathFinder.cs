@@ -4,47 +4,18 @@ using UnityEngine;
 
 namespace PathFinding
 {
-    public class PathFinder : MonoBehaviour
+    public class PathFinder
     {
-        [SerializeField] private GridGraphMediator mediator;
-        [SerializeField] private Vector2Int start;
-        [SerializeField] private Vector2Int end;
-        [SerializeField] private Color startColor;
-        [SerializeField] private Color endColor;
-        [SerializeField] private Color pathColor;
+        private readonly GridGraphMediator mediator;
+        private readonly Graph graph;
 
-        private Graph graph;
-
-        private void Start()
+        public PathFinder(GridGraphMediator mediator)
         {
-            mediator.Initialize();
-            graph = mediator.ConstructGraph();
-
-            int startNode = mediator.GetNode(start);
-            int endNode = mediator.GetNode(end);
-
-            //スタートとゴールに色を付ける
-            mediator.GetCell(startNode).SetColor(startColor);
-            mediator.GetCell(endNode).SetColor(endColor);
+            this.mediator = mediator;
+            graph = mediator.ConstructGraph(); 
         }
 
-        public void FindPath()
-        {
-            int startNode = mediator.GetNode(start);
-            int endNode = mediator.GetNode(end);
-
-            //最短経路を探索
-            List<int> shortestPath = SearchShortestPath(startNode, endNode);
-
-            //startとgoalを除いた部分を塗る
-            for (var i = 1; i < shortestPath.Count - 1; i++)
-            {
-                var node = shortestPath[i];
-                mediator.GetCell(node).SetColor(pathColor);
-            }
-        }
-
-        private List<int> SearchShortestPath(int start, int goal)
+        public List<int> FindPath(int start, int goal)
         {
             //距離を保持する配列(探索していないノードは-1)
             int[] distanceList = new int[graph.NodeCount];
@@ -92,6 +63,7 @@ namespace PathFinding
 
             int distance = distanceList[goal] - 1;
             int current = goal;
+            Vector2Int goalPos = mediator.GetPos(goal);
 
             //ゴールからスタートまでのパスを辿る
             while (current != start)
@@ -107,9 +79,9 @@ namespace PathFinding
                     }
 
                     Vector2Int pos = mediator.GetPos(next);
-
-                    float dx = end.x - pos.x;
-                    float dy = end.y - pos.y;
+                    
+                    float dx = goalPos.x - pos.x;
+                    float dy = goalPos.y - pos.y;
                     float dist = dx * dx + dy * dy;
 
                     //できるだけゴールに近いノードを選択する

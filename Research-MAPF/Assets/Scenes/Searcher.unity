@@ -501,15 +501,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 941433826}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e223d31e3e9d9d4f924e8f3a71a207a, type: 3}
+  m_Script: {fileID: 11500000, guid: bae003f680ff44c99ff81d82b3c561c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   mediator: {fileID: 941433827}
   start: {x: 0, y: 0}
-  end: {x: 19, y: 19}
+  goal: {x: 19, y: 19}
   startColor: {r: 1, g: 0, b: 0, a: 1}
-  endColor: {r: 0, g: 0.20354223, b: 1, a: 1}
-  pathColor: {r: 0.40097085, g: 0.9528302, b: 0.29214135, a: 1}
+  endColor: {r: 0, g: 0.20392157, b: 1, a: 1}
+  pathColor: {r: 0.4, g: 0.9529412, b: 0.2901961, a: 1}
 --- !u!1 &1259301525
 GameObject:
   m_ObjectHideFlags: 0
@@ -1017,7 +1017,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 941433829}
-        m_TargetAssemblyTypeName: PathFinding.PathFinder, Assembly-CSharp
+        m_TargetAssemblyTypeName: PathFinding.SinglePathFinder, Assembly-CSharp
         m_MethodName: FindPath
         m_Mode: 1
         m_Arguments:

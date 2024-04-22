@@ -22,11 +22,6 @@ namespace PathFinding
 
         public void Initialize()
         {
-            UpdateIndex();
-        }
-
-        public void UpdateIndex()
-        {
             mapData = mapGenerator.Generate();
             nodeIndexList = CreateNodeIndexList();
             indexNodeList = nodeIndexList.ToDictionary(x => x.Value, x => x.Key);
