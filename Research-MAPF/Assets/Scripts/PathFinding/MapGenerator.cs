@@ -100,7 +100,11 @@ namespace PathFinding
         private int[,] ParseMapData()
         {
             string[] data = mapData.Data.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-            int[,] mapIds = new int[data.Length, data[0].Length];
+
+            int width = data.Length != 0 ? data[0].Length : defaultWidth;
+            int height = data.Length != 0 ? data.Length : defaultHeight;
+
+            int[,] mapIds = new int[height, width];
 
             for (var i = 0; i < data.Length; i++)
             {

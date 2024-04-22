@@ -48,6 +48,12 @@ namespace PathFinding
             return nodeIndexList[node];
         }
 
+        public Vector2Int GetPos(int node)
+        {
+            int index = nodeIndexList[node];
+            return new Vector2Int(index % mapData.Width, index / mapData.Width);
+        }
+
         public Cell GetCell(int node)
         {
             return mapData.Cells[GetIndex(node)];

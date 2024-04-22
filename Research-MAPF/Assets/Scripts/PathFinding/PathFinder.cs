@@ -67,7 +67,7 @@ namespace PathFinding
                     return ConstructShortestPath(distanceList, start, goal);
                 }
 
-                //接続しているノードを取得
+                //隣接しているノードを取得
                 foreach (int next in graph.GetNextNodes(node))
                 {
                     //探索していたらスキップ
@@ -96,16 +96,33 @@ namespace PathFinding
             //ゴールからスタートまでのパスを辿る
             while (current != start)
             {
+                int minNode = -1;
+                float minDistance = float.MaxValue;
+
                 foreach (int next in graph.GetNextNodes(current))
                 {
-                    if (distanceList[next] == distance)
+                    if (distanceList[next] != distance)
                     {
-                        shortestPath.Add(next);
-                        distance = distanceList[next] - 1;
-                        current = next;
-                        break;
+                        continue;
+                    }
+
+                    Vector2Int pos = mediator.GetPos(next);
+
+                    float dx = end.x - pos.x;
+                    float dy = end.y - pos.y;
+                    float dist = dx * dx + dy * dy;
+
+                    //できるだけゴールに近いノードを選択する
+                    if (dist < minDistance)
+                    {
+                        minNode = next;
+                        minDistance = dist;
                     }
                 }
+
+                shortestPath.Add(minNode);
+                distance = distanceList[minNode] - 1;
+                current = minNode;
             }
 
             //逆転してスタートからゴールのパスに変換
