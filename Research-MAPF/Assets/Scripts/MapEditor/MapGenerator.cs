@@ -75,7 +75,11 @@ namespace PathFinding
             }
             else
             {
-                char[] str = new char[defaultWidth * defaultHeight + defaultHeight];
+                string[] data = mapData.Data.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                int width = data.Length != 0 ? data[0].Length : defaultWidth;
+                int height = data.Length != 0 ? data.Length : defaultHeight;
+
+                char[] str = new char[width * height + height];
                 Array.Fill(str, '.');
 
                 for (int i = 0; i < mapIdData.GetLength(0); i++)
@@ -84,7 +88,7 @@ namespace PathFinding
                     for (int j = 0; j < mapIdData.GetLength(1); j++)
                     {
                         int v = mapIdData[i, j];
-                        index = i * defaultWidth + j + i;
+                        index = i * width + j + i;
                         str[index] = v == 0 ? '.' : '*';
                     }
 
@@ -108,11 +112,11 @@ namespace PathFinding
 
             int[,] mapIds = new int[height, width];
 
-            for (var i = 0; i < data.Length; i++)
+            for (var i = 0; i < height; i++)
             {
                 var h = data[i];
 
-                for (var j = 0; j < h.Length; j++)
+                for (var j = 0; j < width; j++)
                 {
                     mapIds[i, j] = h[j] == '.' ? 0 : 1;
                 }
