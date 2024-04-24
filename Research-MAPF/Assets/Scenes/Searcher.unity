@@ -476,6 +476,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fe3247d59aa4725afabb9351e89597b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startColor: {r: 1, g: 0, b: 0, a: 1}
+  endColor: {r: 0, g: 0.20392157, b: 1, a: 1}
+  pathColor: {r: 0.4, g: 0.9529412, b: 0.2901961, a: 1}
   mapGenerator: {fileID: 1259301526}
 --- !u!4 &941433828
 Transform:
@@ -505,14 +508,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mediator: {fileID: 941433827}
-  agents:
-  - Start: {x: 0, y: 0}
-    Goal: {x: 4, y: 3}
-  - Start: {x: 4, y: 0}
-    Goal: {x: 3, y: 4}
-  startColor: {r: 1, g: 0, b: 0, a: 1}
-  endColor: {r: 0, g: 0.20392157, b: 1, a: 1}
-  pathColor: {r: 0.4, g: 0.9529412, b: 0.2901961, a: 1}
+  agentPrefab: {fileID: 732936753316495021, guid: 605fda224a7532f4fa13dfe090c7932a,
+    type: 3}
+  agentParent: {fileID: 1259301527}
 --- !u!1 &1259301525
 GameObject:
   m_ObjectHideFlags: 0
@@ -542,9 +540,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ed1aee08c454e469e7e9172d7a2930, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultHeight: 5
-  defaultWidth: 5
-  mapData: {fileID: 11400000, guid: d4a8d89cda1058d439d0a9bee8206f6b, type: 2}
+  defaultHeight: 10
+  defaultWidth: 10
+  mapData: {fileID: 11400000, guid: 0108b34256f78604a96e4f5a9e1d1718, type: 2}
   prefab: {fileID: 1236299213508412820, guid: d2d59c25e86df7a418d67ca0aa6576d4, type: 3}
   firstColor: {r: 1, g: 1, b: 1, a: 1}
   secondColor: {r: 0.6037736, g: 0.6037736, b: 0.6037736, a: 1}

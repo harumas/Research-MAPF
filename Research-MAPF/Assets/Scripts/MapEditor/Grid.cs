@@ -8,7 +8,7 @@ namespace PathFinding
         public event Action<Vector2Int> OnSelected;
         public event Action<Vector2Int> OnUnselected;
 
-        private void OnMouseEnter()
+        private void OnMouseOver()
         {
             if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
             {

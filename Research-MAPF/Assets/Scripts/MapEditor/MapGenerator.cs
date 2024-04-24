@@ -75,18 +75,20 @@ namespace PathFinding
             }
             else
             {
-                char[] str = new char[defaultWidth * defaultHeight + defaultWidth];
+                char[] str = new char[defaultWidth * defaultHeight + defaultHeight];
                 Array.Fill(str, '.');
 
                 for (int i = 0; i < mapIdData.GetLength(0); i++)
                 {
+                    int index = 0;
                     for (int j = 0; j < mapIdData.GetLength(1); j++)
                     {
                         int v = mapIdData[i, j];
-                        str[i * defaultWidth + j + i] = v == 0 ? '.' : '*';
+                        index = i * defaultWidth + j + i;
+                        str[index] = v == 0 ? '.' : '*';
                     }
 
-                    str[i * defaultWidth + defaultHeight + i] = '\n';
+                    str[index + 1] = '\n';
                 }
 
                 string result = new string(str);
@@ -184,7 +186,7 @@ namespace PathFinding
             return currentMapData;
         }
 
-        public void SetObstacle(Vector2Int point)
+        private void SetObstacle(Vector2Int point)
         {
             if (!isEditMode)
             {
@@ -208,6 +210,11 @@ namespace PathFinding
 
             Cell cell = currentMapData.Cells[point.y * defaultWidth + point.x];
             cell.ResetColor();
+        }
+
+        public MapSaveData GetMapSaveData()
+        {
+            return mapData;
         }
     }
 }

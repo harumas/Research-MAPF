@@ -6,11 +6,15 @@ namespace PathFinding
 {
     public class GridGraphMediator : MonoBehaviour
     {
+        [SerializeField] private Color startColor;
+        [SerializeField] private Color endColor;
+        [SerializeField] private Color pathColor;
         [SerializeField] private MapGenerator mapGenerator;
 
         private MapData mapData;
         private Dictionary<int, int> nodeIndexList;
         private Dictionary<int, int> indexNodeList;
+        private Graph graph;
 
         private readonly Vector2Int[] direction = new[]
         {
@@ -20,11 +24,58 @@ namespace PathFinding
             new Vector2Int(0, -1)
         };
 
-        public void Initialize()
+        public bool Initialize()
         {
             mapData = mapGenerator.Generate();
             nodeIndexList = CreateNodeIndexList();
             indexNodeList = nodeIndexList.ToDictionary(x => x.Value, x => x.Key);
+            return InitializeEndPoints();
+        }
+
+        private bool InitializeEndPoints()
+        {
+            var endPoints = mapGenerator.GetMapSaveData().EndPoints;
+            bool isUniqueStarts = !endPoints.GroupBy(p => p.Start).SelectMany(g => g.Skip(1)).Any();
+            bool isUniqueGoals = !endPoints.GroupBy(p => p.Goal).SelectMany(g => g.Skip(1)).Any();
+            bool isUniquePoints = isUniqueStarts && isUniqueGoals;
+
+            if (isUniquePoints)
+            {
+                PaintEndPoints(endPoints);
+            }
+            else
+            {
+                Debug.LogError("スタートとゴールのデータが重複しています。");
+            }
+
+            return isUniquePoints;
+        }
+
+        public IReadOnlyList<EndPoint> GetEndPoints()
+        {
+            return mapGenerator.GetMapSaveData().EndPoints;
+        }
+
+        public void PaintPath(List<int> path)
+        {
+            for (var i = 1; i < path.Count - 1; i++)
+            {
+                var node = path[i];
+                GetCell(node).SetColor(pathColor);
+            }
+        }
+
+        private void PaintEndPoints(IReadOnlyList<EndPoint> endPoints)
+        {
+            foreach (EndPoint endPoint in endPoints)
+            {
+                //スタートとゴールに色を付ける
+                int startNode = GetNode(endPoint.Start);
+                int goalNode = GetNode(endPoint.Goal);
+
+                GetCell(startNode).SetColor(startColor);
+                GetCell(goalNode).SetColor(endColor);
+            }
         }
 
         public int GetNode(int index)
@@ -59,7 +110,6 @@ namespace PathFinding
             Dictionary<int, int> list = new Dictionary<int, int>();
 
             int nodeCount = 0;
-
             for (int y = 0; y < mapData.Height; y++)
             {
                 for (int x = 0; x < mapData.Width; x++)
@@ -69,8 +119,7 @@ namespace PathFinding
 
                     if (cell.IsPassable)
                     {
-                        int node = nodeCount++;
-                        list.Add(node, index);
+                        list.Add(nodeCount++, index);
                     }
                 }
             }
@@ -80,7 +129,7 @@ namespace PathFinding
 
         public Graph ConstructGraph()
         {
-            Graph graph = new Graph(mapData.PassableCount);
+            graph = new Graph(mapData.PassableCount);
 
             for (int y = 0; y < mapData.Height; y++)
             {
@@ -108,7 +157,7 @@ namespace PathFinding
 
                             if (to.IsPassable)
                             {
-                                graph.AddEdge(indexNodeList[fromIndex], indexNodeList[toIndex]);
+                                graph.AddEdge(GetNode(fromIndex), GetNode(toIndex));
                             }
                         }
                     }
