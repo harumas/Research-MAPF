@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   endPoints:
   - Start: {x: 2, y: 1}
-    Goal: {x: 3, y: 5}
+    Goal: {x: 3, y: 3}
   - Start: {x: 6, y: 1}
-    Goal: {x: 6, y: 3}
+    Goal: {x: 3, y: 5}
   data: '..........
 
     ..........
