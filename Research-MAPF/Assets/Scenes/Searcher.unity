@@ -542,7 +542,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultHeight: 10
   defaultWidth: 10
-  mapData: {fileID: 11400000, guid: 0108b34256f78604a96e4f5a9e1d1718, type: 2}
+  mapData: {fileID: 11400000, guid: d4a8d89cda1058d439d0a9bee8206f6b, type: 2}
   prefab: {fileID: 1236299213508412820, guid: d2d59c25e86df7a418d67ca0aa6576d4, type: 3}
   firstColor: {r: 1, g: 1, b: 1, a: 1}
   secondColor: {r: 0.6037736, g: 0.6037736, b: 0.6037736, a: 1}

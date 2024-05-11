@@ -33,14 +33,14 @@ namespace PathFinding
         [SerializeField] private GameObject agentPrefab;
         [SerializeField] private Transform agentParent;
 
-        private PathFinder pathFinder;
         private bool isInitialized;
         private bool isPathFound;
+        private IFindStrategy pathFinder;
 
         private void Start()
         {
             isInitialized = mediator.Initialize();
-            pathFinder = new PathFinder(mediator);
+            pathFinder = new NormalStrategy(mediator.ConstructGraph(), mediator);
         }
 
         private List<(Agent, List<int>)> agentPathList;
@@ -72,7 +72,7 @@ namespace PathFinding
             var contexts = CreateContexts(endPoints);
 
             //探索する
-            agentPathList = FindMultiAgentPath(contexts);
+            agentPathList = pathFinder.FindSolution(contexts);
 
             //エージェントにパスを設定
             foreach ((Agent agent, List<int> path) in agentPathList)
@@ -103,53 +103,6 @@ namespace PathFinding
             }
 
             return contexts;
-        }
-
-        private List<(Agent agent, List<int> path)> FindMultiAgentPath(List<SearchContext> contexts)
-        {
-            var pathList = new List<(Agent agent, List<int> path)>();
-
-            foreach (SearchContext context in contexts)
-            {
-                List<int> shortestPath = pathFinder.FindPath(context.Start, context.Goal);
-                pathList.Add((context.Agent, shortestPath));
-            }
-
-            //距離が近い順にソート
-            List<(Agent agent, List<int> path)> orderedList = pathList.OrderBy(item => item.path.Count).ToList();
-
-            //最大距離を取得
-            int maxMove = orderedList.Select(item => item.path.Count).Max();
-
-            for (int t = 0; t < maxMove; t++)
-            {
-                for (var i = 1; i < orderedList.Count; i++)
-                {
-                    List<int> current = orderedList[i].path;
-
-                    if (t >= current.Count)
-                    {
-                        continue;
-                    }
-
-                    for (int j = 0; j < i; j++)
-                    {
-                        List<int> target = orderedList[j].path;
-                        if (t >= target.Count)
-                        {
-                            continue;
-                        }
-
-                        //エージェントが衝突したらタイミングをずらす
-                        if (current[t] == target[t])
-                        {
-                            current.Insert(t, current[t - 1]);
-                        }
-                    }
-                }
-            }
-
-            return orderedList;
         }
 
         private void Clear()

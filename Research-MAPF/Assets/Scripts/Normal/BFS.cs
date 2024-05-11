@@ -4,15 +4,15 @@ using UnityEngine;
 
 namespace PathFinding
 {
-    public class PathFinder
+    public class BFS
     {
         private readonly GridGraphMediator mediator;
         private readonly Graph graph;
 
-        public PathFinder(GridGraphMediator mediator)
+        public BFS(Graph graph, GridGraphMediator mediator)
         {
             this.mediator = mediator;
-            graph = mediator.ConstructGraph(); 
+            this.graph = graph;
         }
 
         public List<int> FindPath(int start, int goal)
@@ -79,7 +79,7 @@ namespace PathFinding
                     }
 
                     Vector2Int pos = mediator.GetPos(next);
-                    
+
                     float dx = goalPos.x - pos.x;
                     float dy = goalPos.y - pos.y;
                     float dist = dx * dx + dy * dy;
