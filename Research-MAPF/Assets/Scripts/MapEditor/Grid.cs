@@ -28,11 +28,18 @@ namespace PathFinding
                 var position = transform.localPosition;
                 OnUnselected?.Invoke(new Vector2Int((int)position.x, (int)position.z));
             }
-            
+
             //デバッグ用
             if ((Input.GetMouseButtonDown(0) || Input.GetMouseButton(0)) && Input.GetKey(KeyCode.LeftShift))
             {
                 renderer.material.color = Color.green;
+            }
+
+            if ((Input.GetMouseButtonDown(0)) && Input.GetKey(KeyCode.LeftControl))
+            {
+                var position = transform.localPosition;
+                var intPos = new Vector2Int((int)position.x, (int)position.z);
+                Debug.Log($"This grid is {intPos}");
             }
         }
     }

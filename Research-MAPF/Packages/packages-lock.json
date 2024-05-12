@@ -1,5 +1,23 @@
 {
   "dependencies": {
+    "com.harumaro.debug_extensions": {
+      "version": "https://github.com/HarumaroJP/DebugExtensions.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "7e576097ee9bb2ec9a101c3db5afd9fc34bb27ba"
+    },
+    "com.harumaro.ugizmo": {
+      "version": "https://github.com/harumas/UGizmo.git?path=src/UGizmo/Assets/UGizmo",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.burst": "1.8.12",
+        "com.unity.collections": "1.2.4",
+        "com.unity.mathematics": "1.2.6"
+      },
+      "hash": "beab27c2bdf537a14c3337cb2b60bbb59201bd83"
+    },
     "com.unity.burst": {
       "version": "1.8.13",
       "depth": 1,
@@ -15,6 +33,16 @@
       "depth": 0,
       "source": "registry",
       "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.collections": {
+      "version": "1.2.4",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.burst": "1.6.6",
+        "com.unity.test-framework": "1.1.31"
+      },
       "url": "https://packages.unity.com"
     },
     "com.unity.ext.nunit": {

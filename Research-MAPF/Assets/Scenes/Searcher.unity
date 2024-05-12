@@ -185,7 +185,7 @@ Camera:
   far clip plane: 100
   field of view: 60
   orthographic: 1
-  orthographic size: 7
+  orthographic size: 8
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -540,9 +540,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ed1aee08c454e469e7e9172d7a2930, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultHeight: 10
-  defaultWidth: 10
-  mapData: {fileID: 11400000, guid: d4a8d89cda1058d439d0a9bee8206f6b, type: 2}
+  defaultHeight: 15
+  defaultWidth: 15
+  mapData: {fileID: 11400000, guid: 892ed6f522534f74384735287eab6419, type: 2}
   prefab: {fileID: 1236299213508412820, guid: d2d59c25e86df7a418d67ca0aa6576d4, type: 3}
   firstColor: {r: 1, g: 1, b: 1, a: 1}
   secondColor: {r: 0.6037736, g: 0.6037736, b: 0.6037736, a: 1}

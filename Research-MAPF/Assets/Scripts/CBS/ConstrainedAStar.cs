@@ -6,11 +6,6 @@ namespace PathFinding.CBS
 {
     public class ConstrainedAStar
     {
-        public const int ModeVh = 0; 
-        public const int ModeN = 1; 
-
-        public static int mode = ModeVh;
-
         private readonly Graph graph;
         private readonly List<Node> nodes;
 
@@ -39,24 +34,11 @@ namespace PathFinding.CBS
                     node = nodes[i];
                 }
 
-                if (mode == ModeVh)
+                if (Math.Abs(pCostA - pCostB) < Mathf.Epsilon)
                 {
-                    if (Math.Abs(pCostA - pCostB) < Mathf.Epsilon)
+                    if (nodes[i].HCost < node.HCost)
                     {
-                        if (nodes[i].VCost < node.VCost)
-                        {
-                            node = nodes[i];
-                        }
-                    }
-                }
-                else if (mode == ModeN)
-                {
-                    if (Math.Abs(pCostA - pCostB) < Mathf.Epsilon)
-                    {
-                        if (nodes[i].HCost < node.HCost)
-                        {
-                            node = nodes[i];
-                        }
+                        node = nodes[i];
                     }
                 }
             }
@@ -64,9 +46,9 @@ namespace PathFinding.CBS
             return node;
         }
 
-        private int GetVCost(Node n, List<List<Node>> solution, int curAgent)
+        private int GetVCost(Node n, List<List<Node>> solution, int currentAgent)
         {
-            if (solution == null || curAgent < 0)
+            if (solution == null || currentAgent < 0)
             {
                 return 0;
             }
@@ -74,7 +56,7 @@ namespace PathFinding.CBS
             int vcost = 0;
             for (int i = 0; i < solution.Count; i++)
             {
-                if (i != curAgent)
+                if (i != currentAgent)
                 {
                     // コンフリクトのコストを加算
                     List<Node> path = solution[i];
@@ -101,7 +83,7 @@ namespace PathFinding.CBS
 
             Node startNode = nodes[start];
             Node targetNode = nodes[end];
-    
+
             List<Node> openSet = new List<Node>();
             HashSet<Node> closedSet = new HashSet<Node>();
 
@@ -124,7 +106,7 @@ namespace PathFinding.CBS
                 foreach (int nodeIndex in graph.GetNextNodes(node.Index))
                 {
                     Node neighbour = nodes[nodeIndex];
-                    
+
                     //制約に引っかかったらスキップ
                     if (constraints.Exists(state => state.Node.Position == neighbour.Position && state.Time == node.Time + 1))
                     {

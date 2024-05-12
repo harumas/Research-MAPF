@@ -40,7 +40,7 @@ namespace PathFinding
         private void Start()
         {
             isInitialized = mediator.Initialize();
-            pathFinder = new NormalStrategy(mediator.ConstructGraph(), mediator);
+            pathFinder = new CBS.CBS(mediator.ConstructGraph(), mediator);
         }
 
         private List<(Agent, List<int>)> agentPathList;

@@ -15,6 +15,7 @@ namespace PathFinding
 
         public void Initialize(int index, Vector2Int start)
         {
+            gameObject.name = $"Agent_{index}";
             Color = colors.Count > index ? colors[index] : Random.ColorHSV(0f, 1f, 1f, 1f, 1f, 1f);
             transform.localPosition = GetAgentPos(start);
             GetComponent<Renderer>().material.color = Color;

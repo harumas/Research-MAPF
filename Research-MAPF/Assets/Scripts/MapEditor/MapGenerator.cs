@@ -75,32 +75,36 @@ namespace PathFinding
             }
             else
             {
-                string[] data = mapData.Data.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-                int width = data.Length != 0 ? data[0].Length : defaultWidth;
-                int height = data.Length != 0 ? data.Length : defaultHeight;
-
-                char[] str = new char[width * height + height];
-                Array.Fill(str, '.');
-
-                for (int i = 0; i < mapIdData.GetLength(0); i++)
-                {
-                    int index = 0;
-                    for (int j = 0; j < mapIdData.GetLength(1); j++)
-                    {
-                        int v = mapIdData[i, j];
-                        index = i * width + j + i;
-                        str[index] = v == 0 ? '.' : '*';
-                    }
-
-                    str[index + 1] = '\n';
-                }
-
-                string result = new string(str);
-                mapData.SetData(result);
+                SaveCurrentMap(mapIdData);
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-
                 obstacleModeText.SetText("Edit");
             }
+        }
+
+        private void SaveCurrentMap(int [,] mapIds)
+        {
+            string[] data = mapData.Data.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+            int width = data.Length != 0 ? data[0].Length : defaultWidth;
+            int height = data.Length != 0 ? data.Length : defaultHeight;
+
+            char[] str = new char[width * height + height];
+            Array.Fill(str, '.');
+
+            for (int i = 0; i < mapIds.GetLength(0); i++)
+            {
+                int index = 0;
+                for (int j = 0; j < mapIds.GetLength(1); j++)
+                {
+                    int v = mapIds[i, j];
+                    index = i * width + j + i;
+                    str[index] = v == 0 ? '.' : '*';
+                }
+
+                str[index + 1] = '\n';
+            }
+
+            string result = new string(str);
+            mapData.SetData(result);
         }
 
         private int[,] ParseMapData()
@@ -135,6 +139,7 @@ namespace PathFinding
                 mapIds = new int[defaultHeight, defaultWidth];
                 width = defaultWidth;
                 height = defaultHeight;
+                SaveCurrentMap(mapIds);
             }
             else
             {
@@ -161,7 +166,7 @@ namespace PathFinding
                     bool isPassable = mapIds[z, x] == 0;
 
                     GameObject cube = Instantiate(prefab, transform);
-                    Renderer renderer = cube.GetComponent<Renderer>();
+                    Renderer rend = cube.GetComponent<Renderer>();
                     cube.transform.position = position;
 
                     Grid grid = cube.GetComponent<Grid>();
@@ -170,7 +175,7 @@ namespace PathFinding
 
                     Color defaultColor = (x + z) % 2 != 0 ? firstColor : secondColor;
                     Color color = isPassable ? defaultColor : obstacleColor;
-                    Cell cell = new Cell(isPassable, renderer, defaultColor, color);
+                    Cell cell = new Cell(isPassable, rend, defaultColor, color);
 
                     cells.Add(cell);
 
