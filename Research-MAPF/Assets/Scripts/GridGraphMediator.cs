@@ -58,10 +58,20 @@ namespace PathFinding
 
         public void PaintPath(List<int> path)
         {
+            IReadOnlyList<EndPoint> endPoints = GetEndPoints();
+            int[] endPointNodes = endPoints.Select(point => GetNode(point.Start))
+                .Concat(endPoints.Select(point => GetNode(point.Goal)))
+                .ToArray();
+
             for (var i = 1; i < path.Count - 1; i++)
             {
                 var node = path[i];
-                GetCell(node).SetColor(pathColor);
+
+                if (!endPointNodes.Contains(node))
+                {
+                    Cell cell = GetCell(node);
+                    cell.SetColor(pathColor);
+                }
             }
         }
 

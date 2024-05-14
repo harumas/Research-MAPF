@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Wanna.DebugEx;
 
 namespace PathFinding.CBS
 {
@@ -83,12 +82,6 @@ namespace PathFinding.CBS
             {
                 List<Node> path = resultSolution[i];
                 results.Add((contexts[i].Agent, path.Select(item => item.Index).ToList()));
-            }
-
-            foreach ((Agent agent, List<int> path) in results)
-            {
-                Debug.Log(agent.name);
-                DebugEx.Log(path);
             }
 
             return results;

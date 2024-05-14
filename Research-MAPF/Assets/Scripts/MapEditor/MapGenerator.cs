@@ -81,7 +81,7 @@ namespace PathFinding
             }
         }
 
-        private void SaveCurrentMap(int [,] mapIds)
+        private void SaveCurrentMap(int[,] mapIds)
         {
             string[] data = mapData.Data.Split('\n', StringSplitOptions.RemoveEmptyEntries);
             int width = data.Length != 0 ? data[0].Length : defaultWidth;

@@ -9,7 +9,9 @@ namespace PathFinding
     {
         private List<Vector2Int> gridPositions;
         [SerializeField] private List<Color> colors;
+        [SerializeField] private float speed;
         private int moveCount;
+        private Vector3 agentPosition;
 
         public Color Color { get; private set; }
 
@@ -24,6 +26,7 @@ namespace PathFinding
         public void SetWaypoints(List<Vector2Int> gridPositions)
         {
             this.gridPositions = gridPositions;
+            agentPosition = GetAgentPos(gridPositions[moveCount]);
         }
 
         private void Update()
@@ -39,14 +42,23 @@ namespace PathFinding
                     return;
                 }
 
-                Vector3 pos = GetAgentPos(gridPositions[moveCount]);
-                transform.localPosition = pos;
+                agentPosition = GetAgentPos(gridPositions[moveCount]);
             }
 
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 DestroyImmediate(gameObject);
             }
+        }
+
+        private void FixedUpdate()
+        {
+            if (gridPositions != null && moveCount >= gridPositions.Count)
+            {
+                return;
+            }
+
+            transform.localPosition = Vector3.MoveTowards(transform.localPosition, agentPosition, Time.fixedDeltaTime * speed);
         }
 
         private Vector3 GetAgentPos(Vector2Int gridPos)

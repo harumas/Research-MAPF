@@ -2,8 +2,8 @@
 {
     public readonly struct Constraint
     {
-        public readonly Node Node; // node position
-        public readonly int Time; // time step
+        public readonly Node Node; 
+        public readonly int Time; 
 
         public Constraint(Node node, int time)
         {
