@@ -511,6 +511,7 @@ MonoBehaviour:
   agentPrefab: {fileID: 732936753316495021, guid: 605fda224a7532f4fa13dfe090c7932a,
     type: 3}
   agentParent: {fileID: 1259301527}
+  findStrategy: 0
 --- !u!1 &1259301525
 GameObject:
   m_ObjectHideFlags: 0
@@ -542,7 +543,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultHeight: 15
   defaultWidth: 15
-  mapData: {fileID: 11400000, guid: 13f9452dd9200c247b82e30cdf28fb08, type: 2}
+  mapData: {fileID: 11400000, guid: 892ed6f522534f74384735287eab6419, type: 2}
   prefab: {fileID: 1236299213508412820, guid: d2d59c25e86df7a418d67ca0aa6576d4, type: 3}
   firstColor: {r: 1, g: 1, b: 1, a: 1}
   secondColor: {r: 0.6037736, g: 0.6037736, b: 0.6037736, a: 1}

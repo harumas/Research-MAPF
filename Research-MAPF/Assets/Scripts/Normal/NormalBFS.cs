@@ -3,11 +3,11 @@ using System.Linq;
 
 namespace PathFinding
 {
-    public class NormalStrategy : IFindStrategy
+    public class NormalBFS : IFindStrategy
     {
         private readonly BFS pathFinder;
 
-        public NormalStrategy(Graph graph, GridGraphMediator mediator)
+        public NormalBFS(Graph graph, GridGraphMediator mediator)
         {
             pathFinder = new BFS(graph, mediator);
         }

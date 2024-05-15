@@ -50,12 +50,12 @@ namespace PathFinding.CBS
                             }
 
                             //同じマスに入れ違いになったら(following conflict)
-                            if (TryConflictFollow(paths, t, i, j, out Conflict fConflict))
-                            {
-                                conflicts.Add(fConflict);
-                                conflictFound = true;
-                                continue;
-                            }
+                            // if (TryConflictFollow(paths, t, i, j, out Conflict fConflict))
+                            // {
+                            //     conflicts.Add(fConflict);
+                            //     conflictFound = true;
+                            //     continue;
+                            // }
                         }
 
                         if (TryStaticConflict(paths, t, i, j, out Conflict sConflict))

@@ -6,6 +6,12 @@ using UnityEngine;
 
 namespace PathFinding
 {
+    public enum FindStrategy
+    {
+        NormalBFS,
+        CBS
+    }
+
     public readonly struct SearchContext
     {
         public readonly Agent Agent;
@@ -32,18 +38,25 @@ namespace PathFinding
         [SerializeField] private GridGraphMediator mediator;
         [SerializeField] private GameObject agentPrefab;
         [SerializeField] private Transform agentParent;
+        [SerializeField] private FindStrategy findStrategy;
 
         private bool isInitialized;
         private bool isPathFound;
+        private List<(Agent, List<int>)> agentPathList;
         private IFindStrategy pathFinder;
+        private Dictionary<FindStrategy, IFindStrategy> findStrategies;
 
         private void Start()
         {
             isInitialized = mediator.Initialize();
-            pathFinder = new CBS.CBS(mediator.ConstructGraph(), mediator);
-        }
+            Graph graph = mediator.ConstructGraph();
 
-        private List<(Agent, List<int>)> agentPathList;
+            findStrategies = new Dictionary<FindStrategy, IFindStrategy>()
+            {
+                { FindStrategy.NormalBFS, new NormalBFS(graph, mediator) },
+                { FindStrategy.CBS, new CBS.CBS(graph, mediator) }
+            };
+        }
 
         private void Update()
         {
@@ -65,6 +78,8 @@ namespace PathFinding
             {
                 return;
             }
+
+            pathFinder = findStrategies[findStrategy];
 
             var endPoints = mediator.GetEndPoints();
 
