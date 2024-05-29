@@ -3,6 +3,8 @@
 ## 記事
 [マルチエージェント経路計画の紹介](https://kei18.github.io/note/posts/mapf-tutorial/)
 
+[マルチエージェント経路計画の基礎と最新動向](https://speakerdeck.com/ssii/ssii2023-os3-02)
+
 ## 関連研究
 
 ### 日本語
@@ -36,5 +38,9 @@
 
 - MAPFを時間拡張グラフ上のナンバーリンクパズルと見なし，制約最適化問題に基づくMAPFの定式化を試みる．
 
+
+[確率的に変動する所要時間下のマルチエージェント経路探索におけるパラメータ推定について](https://www.jstage.jst.go.jp/article/pjsai/JSAI2023/0/JSAI2023_2F4GS504/_article/-char/ja/)
+
+[バトルロイヤルゲームのアイテム探索に適した マルチエージェント経路探索の定式化](https://gamescience.jp/2022/Paper/Shibayama_2022.pdf)
 ### arXiv
 https://arxiv.org/search/?query=Multi+Agent+Path+Finding&searchtype=all&source=header
