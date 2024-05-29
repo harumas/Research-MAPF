@@ -46,5 +46,8 @@
 [MAPF問題におけるエージェントの操作回数を考慮する経路探索と退避先頂点の選択手法の検討](https://jglobal.jst.go.jp/detail?JGLOBAL_ID=202102220906834186)
 
 [敵対者を考慮したマルチエージェント経路探索のためのアルゴリズム開発](https://kaken.nii.ac.jp/ja/grant/KAKENHI-PROJECT-17K12744/)
+
+[連続時間のマルチエージェント経路探索](https://www.sciencedirect.com/science/article/pii/S0004370222000029?via%3Dihub)
+
 ### arXiv
 https://arxiv.org/search/?query=Multi+Agent+Path+Finding&searchtype=all&source=header
