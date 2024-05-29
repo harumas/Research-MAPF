@@ -42,5 +42,9 @@
 [確率的に変動する所要時間下のマルチエージェント経路探索におけるパラメータ推定について](https://www.jstage.jst.go.jp/article/pjsai/JSAI2023/0/JSAI2023_2F4GS504/_article/-char/ja/)
 
 [バトルロイヤルゲームのアイテム探索に適した マルチエージェント経路探索の定式化](https://gamescience.jp/2022/Paper/Shibayama_2022.pdf)
+
+[MAPF問題におけるエージェントの操作回数を考慮する経路探索と退避先頂点の選択手法の検討](https://jglobal.jst.go.jp/detail?JGLOBAL_ID=202102220906834186)
+
+[敵対者を考慮したマルチエージェント経路探索のためのアルゴリズム開発](https://kaken.nii.ac.jp/ja/grant/KAKENHI-PROJECT-17K12744/)
 ### arXiv
 https://arxiv.org/search/?query=Multi+Agent+Path+Finding&searchtype=all&source=header
