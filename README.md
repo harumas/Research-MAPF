@@ -50,4 +50,17 @@
 [連続時間のマルチエージェント経路探索](https://www.sciencedirect.com/science/article/pii/S0004370222000029?via%3Dihub)
 
 ### arXiv
-https://arxiv.org/search/?query=Multi+Agent+Path+Finding&searchtype=all&source=header
+
+[Explanation Generation for Multi-Modal Multi-Agent Path Finding with Optimal Resource Utilization using Answer Set Programming∗](https://arxiv.org/abs/2008.03573)
+
+この論文は、自律倉庫などのロボティクス領域におけるmMAPF（Multi-Modal Multi-Agent Path Finding）問題に焦点を当てており、エージェントのバッテリーレベルや移動速度の変化を考慮する。ASP（Answer Set Programming）を使用して、エージェントの経路やリソース消費を最適化する方法を提案する。
+- 道幅や、角度によって速度を変化させる。
+
+[Variational collision and obstacle avoidance of multi-agent systems on Riemannian manifolds](https://arxiv.org/abs/1910.04995)
+
+この論文の導入部分では、多機体システムの協力と調整が民間および軍事分野で広く応用されているため、その重要性が強調されている。特に、無人航空機や衛星クラスターの協力制御、群れの形成制御、センサーネットワークの制御などの応用が挙げられている。多数のロボットや自由度の多いシステムにおいて、最適な動作計画を見つけることは計算上非常に高コストになるため、簡単に計算可能な運動計画戦略の追求が重要である。そのため、幾何学的技術と変分解析に基づいた衝突回避戦略が提案されている。
+- 衝突を起こさないような速度を算出する。
+
+[Multi-agent Path Finding with Continuous Time Viewed Through Satisfiability Modulo Theories (SMT)](https://arxiv.org/abs/1903.09820)
+
+[Towards Optimally Decentralized Multi-Robot Collision Avoidance via Deep Reinforcement Learning](https://arxiv.org/abs/1709.10082)
