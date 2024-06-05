@@ -63,4 +63,7 @@
 
 [Multi-agent Path Finding with Continuous Time Viewed Through Satisfiability Modulo Theories (SMT)](https://arxiv.org/abs/1903.09820)
 
-[Towards Optimally Decentralized Multi-Robot Collision Avoidance via Deep Reinforcement Learning](https://arxiv.org/abs/1709.10082)
+Introduction and Backgroundセクションでは、マルチエージェント・パスファインディング（MAPF）の一般的な定義と、連続的な空間と時間におけるMAPFの新しい変種であるMAPF R（MAPF with continuous movements）に焦点が当てられています。MAPFは、エージェントが与えられた開始頂点から目標頂点まで移動するタスクであり、エージェント同士がグラフの頂点で衝突しないようにすることが目的です。MAPF Rは、最近導入されたMAPFの拡張であり、エージェントの移動が連続的であり、事前に定義された位置間での移動を考慮します。SMT推論をMAPF Rの解決に適用する方法を示し、Makespan最適解を目指しています。CBSアルゴリズムを基盤として、SMT-CBSアルゴリズムが導入され、効率的な解法が提案されています。
+
+初期状態とゴール状態を元に、エージェントの移動可能な領域と速度を定義する。
+それを元に、連続的な空間と時間におけるMAPF問題を解決する。
