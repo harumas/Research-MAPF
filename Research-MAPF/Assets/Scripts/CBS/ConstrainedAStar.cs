@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PathFinding.CBS
 {
@@ -20,122 +21,73 @@ namespace PathFinding.CBS
             }
         }
 
-        private Node GetMinCostNode(List<Node> nodes)
-        {
-            Node node = nodes[0];
-
-            for (int i = 1; i < nodes.Count; i++)
-            {
-                float pCostA = nodes[i].GCost + nodes[i].HCost;
-                float pCostB = node.GCost + node.HCost;
-
-                if (pCostA < pCostB)
-                {
-                    node = nodes[i];
-                }
-
-                if (Math.Abs(pCostA - pCostB) < Mathf.Epsilon)
-                {
-                    if (nodes[i].HCost < node.HCost)
-                    {
-                        node = nodes[i];
-                    }
-                }
-            }
-
-            return node;
-        }
-
-        private int GetVCost(Node n, List<List<Node>> solution, int currentAgent)
-        {
-            if (solution == null || currentAgent < 0)
-            {
-                return 0;
-            }
-
-            int vcost = 0;
-            for (int i = 0; i < solution.Count; i++)
-            {
-                if (i != currentAgent)
-                {
-                    // コンフリクトのコストを加算
-                    List<Node> path = solution[i];
-                    if (n.Time < path.Count && path[n.Time] == n)
-                    {
-                        vcost++;
-                    }
-                }
-            }
-
-            return vcost;
-        }
-
-
         public List<Node> FindPath(
             int start,
             int end,
-            List<Constraint> constraints,
-            List<List<Node>> prevSolution,
-            int agent
+            List<Constraint> constraints
         )
         {
-            Reset();
-
             Node startNode = nodes[start];
             Node targetNode = nodes[end];
 
-            List<Node> openSet = new List<Node>();
-            HashSet<Node> closedSet = new HashSet<Node>();
-
-            openSet.Add(startNode);
+            SortedSet<(float f, int node)> openSet = new SortedSet<(float f, int node)> { (0, start) };
+            Dictionary<int, int> cameFrom = new Dictionary<int, int>();
+            Dictionary<int, int> gCosts = new Dictionary<int, int> { [start] = 0 };
+            Dictionary<int, float> fCosts = new Dictionary<int, float> { [start] = Heuristic(startNode, targetNode) };
 
             while (openSet.Count > 0)
             {
-                Node node = GetMinCostNode(openSet);
-
-                openSet.Remove(node);
-                closedSet.Add(node);
+                Node node = nodes[openSet.First().node];
 
                 //ゴールに到達したら
                 if (node == targetNode)
                 {
                     //親まで辿ってパスを返す
-                    return RetracePath(startNode, targetNode);
+                    return RetracePath(cameFrom, node.Index);
                 }
 
-                foreach (int nodeIndex in graph.GetNextNodes(node.Index))
+                openSet.Remove(openSet.First());
+
+                foreach (int neighbourIndex in graph.GetNextNodes(node.Index))
                 {
-                    Node neighbour = nodes[nodeIndex];
+                    Node neighbour = nodes[neighbourIndex];
+                    int nextGCost = gCosts[node.Index] + 1;
 
                     //制約に引っかかったらスキップ
-                    if (constraints.Exists(state => state.Node.Position == neighbour.Position && state.Time == node.Time + 1))
+                    if (constraints.Exists(state => state.Node.Index == neighbour.Index && state.Time == nextGCost))
                     {
                         continue;
                     }
-
-                    //探索済みだったらスキップ
-                    if (!neighbour.Available || closedSet.Contains(neighbour))
-                    {
-                        continue;
-                    }
-
-                    //g(x) + h(x)
-                    float newCostToNeighbour = node.GCost + GetDistance(node, neighbour);
 
                     //ゴール方向に近づくノードだったら
-                    if (newCostToNeighbour < neighbour.GCost || !openSet.Contains(neighbour))
+                    if (!gCosts.ContainsKey(neighbourIndex) || nextGCost < gCosts[neighbourIndex])
                     {
-                        neighbour.GCost = newCostToNeighbour;
-                        neighbour.HCost = GetDistance(neighbour, targetNode);
+                        cameFrom[neighbourIndex] = node.Index;
+                        gCosts[neighbourIndex] = nextGCost;
+                        fCosts[neighbourIndex] = nextGCost + Heuristic(neighbour, targetNode);
 
-                        neighbour.Parent = node;
-                        neighbour.Time = neighbour.Parent.Time + 1;
-
-                        neighbour.VCost = neighbour.Parent.VCost + GetVCost(neighbour, prevSolution, agent);
-
-                        if (!openSet.Contains(neighbour))
+                        if (openSet.All(n => n.node != neighbour.Index))
                         {
-                            openSet.Add(neighbour);
+                            openSet.Add((fCosts[neighbourIndex], neighbourIndex));
+                        }
+                    }
+
+                    // 待機の選択肢を追加
+                    int nextGCostWait = gCosts[node.Index] + 1;
+                    if (constraints.Exists(state => state.Node.Index == node.Index && state.Time == nextGCostWait))
+                    {
+                        continue;
+                    }
+
+                    if (!gCosts.ContainsKey(node.Index) || nextGCostWait < gCosts[node.Index])
+                    {
+                        cameFrom[node.Index] = node.Index;
+                        gCosts[node.Index] = nextGCostWait;
+                        fCosts[node.Index] = nextGCostWait + Heuristic(node, nodes[end]);
+
+                        if (openSet.All(n => n.node != node.Index))
+                        {
+                            openSet.Add((fCosts[node.Index], node.Index));
                         }
                     }
                 }
@@ -146,35 +98,25 @@ namespace PathFinding.CBS
             return path;
         }
 
-        private float GetDistance(Node nodeA, Node nodeB)
+        private float Heuristic(Node nodeA, Node nodeB)
         {
             float magnitude = Vector2.SqrMagnitude(nodeA.Position - nodeB.Position);
             return magnitude;
         }
 
-        private List<Node> RetracePath(Node startNode, Node endNode)
+        private List<Node> RetracePath(Dictionary<int, int> cameFrom, int current)
         {
-            List<Node> path = new List<Node>();
-            Node currentNode = endNode;
+            List<Node> path = new List<Node>() { nodes[current] };
 
-            while (currentNode != startNode)
+            while (cameFrom.ContainsKey(current) && cameFrom[current] != current)
             {
-                path.Add(currentNode);
-                currentNode = currentNode.Parent;
+                current = cameFrom[current];
+                path.Add(nodes[current]);
             }
 
-            path.Add(startNode);
             path.Reverse();
 
             return path;
-        }
-
-        private void Reset()
-        {
-            foreach (Node node in nodes)
-            {
-                node.Reset();
-            }
         }
     }
 }

@@ -7,20 +7,20 @@ namespace PathFinding
 {
     public class Agent : MonoBehaviour
     {
+        public int Index { get; private set; }
+
         private List<Vector2Int> gridPositions;
-        [SerializeField] private List<Color> colors;
         [SerializeField] private float speed;
         private int moveCount;
         private Vector3 agentPosition;
 
-        public Color Color { get; private set; }
-
-        public void Initialize(int index, Vector2Int start)
+        public void Initialize(int index, Vector2Int start, Color color)
         {
+            Index = index;
+            
             gameObject.name = $"Agent_{index}";
-            Color = colors.Count > index ? colors[index] : Random.ColorHSV(0f, 1f, 1f, 1f, 1f, 1f);
             transform.localPosition = GetAgentPos(start);
-            GetComponent<Renderer>().material.color = Color;
+            GetComponent<Renderer>().material.color = color;
         }
 
         public void SetWaypoints(List<Vector2Int> gridPositions)

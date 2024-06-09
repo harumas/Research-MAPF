@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Wanna.DebugEx;
 
 namespace PathFinding.CBS
 {
@@ -15,40 +16,33 @@ namespace PathFinding.CBS
             conflictFinder = new ConflictFinder();
         }
 
-        public List<(Agent agent, List<int> path)> FindSolution(List<SearchContext> contexts)
+        public List<(Agent agent, List<int> path)> Solve(List<SearchContext> contexts)
         {
             int agentCount = contexts.Count;
             List<ConstraintNode> openList = new List<ConstraintNode>();
             List<List<Node>> resultSolution = null;
 
+            //CTのルートノードを作成
             List<Constraint>[] emptyConstraints = GetEmptyConstraints(agentCount);
             List<List<Node>> solution = GetSolution(contexts, emptyConstraints);
             int cost = solution.Sum(path => path.Count);
-
-            /* add root node */
             ConstraintNode node = new ConstraintNode(emptyConstraints, solution, cost);
+            
             openList.Add(node);
 
-            int nodesTraversed = 0;
             while (openList.Count > 0)
             {
-                nodesTraversed++;
-
                 node = GetMinCostNode(openList);
                 openList.Remove(node);
 
                 resultSolution = node.Solution;
                 List<Conflict> conflicts = conflictFinder.GetConflicts(node.Solution);
 
+                //衝突がなかったら終了
                 if (conflicts.Count == 0)
                 {
                     Debug.Log("final->");
                     Debug.Log(node.Cost);
-                    break;
-                }
-
-                if (conflicts.Count <= 0)
-                {
                     continue;
                 }
 
@@ -65,7 +59,7 @@ namespace PathFinding.CBS
                         newConstraints[agentID].Add(new Constraint(conflict.Node, conflict.Time));
 
                         // solve with new constraints
-                        List<List<Node>> newSolution = GetSolution(contexts, newConstraints, node.Solution, agentID);
+                        List<List<Node>> newSolution = GetSolution(contexts, newConstraints, agentID);
                         int newCost = solution.Sum(path => path.Count);
 
                         // add new node
@@ -76,7 +70,6 @@ namespace PathFinding.CBS
             }
 
             List<(Agent agent, List<int> path)> results = new List<(Agent agent, List<int> path)>(contexts.Count);
-
 
             for (int i = 0; i < contexts.Count; i++)
             {
@@ -104,7 +97,6 @@ namespace PathFinding.CBS
         List<List<Node>> GetSolution(
             List<SearchContext> contexts,
             List<Constraint>[] constraints,
-            List<List<Node>> prevSolution = null,
             int currentAgent = -1)
         {
             List<List<Node>> solution = new List<List<Node>>();
@@ -114,8 +106,7 @@ namespace PathFinding.CBS
             if (currentAgent != -1)
             {
                 SearchContext context = contexts[currentAgent];
-                constrainedPath = pathFinder.FindPath(context.Start, context.Goal, constraints[currentAgent], prevSolution, currentAgent);
-                prevSolution[currentAgent] = constrainedPath;
+                constrainedPath = pathFinder.FindPath(context.Start, context.Goal, constraints[currentAgent]);
             }
 
             // solve the rest of the agents
@@ -124,13 +115,7 @@ namespace PathFinding.CBS
                 if (currentAgent == -1 || i != currentAgent)
                 {
                     SearchContext context = contexts[i];
-                    List<Node> path = pathFinder.FindPath(context.Start, context.Goal, constraints[i], prevSolution, i);
-
-                    if (prevSolution != null)
-                    {
-                        prevSolution[i] = path;
-                    }
-
+                    List<Node> path = pathFinder.FindPath(context.Start, context.Goal, constraints[i]);
                     solution.Add(path);
                 }
 

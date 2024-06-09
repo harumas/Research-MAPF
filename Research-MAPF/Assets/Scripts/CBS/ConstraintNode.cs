@@ -7,7 +7,7 @@ namespace PathFinding.CBS
     {
         public readonly List<Constraint>[] Constraints;
         public readonly List<List<Node>> Solution = new List<List<Node>>();
-        public int Cost;
+        public readonly int Cost;
 
         public ConstraintNode(List<Constraint>[] constraints, List<List<Node>> solution, int cost)
         {

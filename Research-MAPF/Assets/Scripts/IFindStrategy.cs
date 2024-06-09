@@ -4,6 +4,6 @@ namespace PathFinding
 {
     public interface IFindStrategy
     {
-        List<(Agent agent, List<int> path)> FindSolution(List<SearchContext> contexts);
+        List<(Agent agent, List<int> path)> Solve(List<SearchContext> contexts);
     }
 }

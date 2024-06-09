@@ -12,7 +12,7 @@ namespace PathFinding
             pathFinder = new BFS(graph, mediator);
         }
 
-        public List<(Agent agent, List<int> path)> FindSolution(List<SearchContext> contexts)
+        public List<(Agent agent, List<int> path)> Solve(List<SearchContext> contexts)
         {
             var pathList = new List<(Agent agent, List<int> path)>();
 

@@ -9,11 +9,11 @@ namespace PathFinding
         public event Action<Vector2Int> OnUnselected;
         public Vector2Int Point { get; private set; }
 
-        private Renderer renderer;
+        private Renderer blockRenderer;
 
         private void Start()
         {
-            renderer = GetComponent<Renderer>();
+            blockRenderer = GetComponent<Renderer>();
             var position = transform.localPosition;
             Point = new Vector2Int((int)position.x, (int)position.z); 
         }
@@ -33,7 +33,7 @@ namespace PathFinding
             //デバッグ用
             if ((Input.GetMouseButtonDown(0) || Input.GetMouseButton(0)) && Input.GetKey(KeyCode.LeftShift))
             {
-                renderer.material.color = Color.green;
+                blockRenderer.material.color = Color.green;
             }
 
             if ((Input.GetMouseButtonDown(0)) && Input.GetKey(KeyCode.LeftControl))

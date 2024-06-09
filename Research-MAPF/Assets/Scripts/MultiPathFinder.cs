@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Wanna.DebugEx;
 
 
 namespace PathFinding
@@ -87,12 +88,13 @@ namespace PathFinding
             var contexts = CreateContexts(endPoints);
 
             //探索する
-            agentPathList = pathFinder.FindSolution(contexts);
+            agentPathList = pathFinder.Solve(contexts);
 
             //エージェントにパスを設定
             foreach ((Agent agent, List<int> path) in agentPathList)
             {
-                mediator.PaintPath(path);
+                DebugEx.Log(path);
+                mediator.PaintPath(agent, path);
                 agent.SetWaypoints(path.Select(node => mediator.GetPos(node)).ToList());
             }
 
@@ -108,7 +110,8 @@ namespace PathFinding
             {
                 //エージェントのオブジェクトを生成
                 Agent agent = Instantiate(agentPrefab, agentParent).GetComponent<Agent>();
-                agent.Initialize(index++, endPoint.Start);
+                agent.Initialize(index, endPoint.Start, mediator.Colors[index]);
+                index++;
 
                 //座標をノードに変換
                 int startNode = mediator.GetNode(endPoint.Start);

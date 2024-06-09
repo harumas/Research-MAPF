@@ -6,8 +6,9 @@ namespace PathFinding
 {
     public class GridGraphMediator : MonoBehaviour
     {
-        [SerializeField] private Color startColor;
-        [SerializeField] private Color endColor;
+        public List<Color> Colors => colors;
+
+        [SerializeField] private List<Color> colors;
         [SerializeField] private Color pathColor;
         [SerializeField] private MapGenerator mapGenerator;
 
@@ -29,21 +30,17 @@ namespace PathFinding
             mapData = mapGenerator.Generate();
             nodeIndexList = CreateNodeIndexList();
             indexNodeList = nodeIndexList.ToDictionary(x => x.Value, x => x.Key);
-            return InitializeEndPoints();
+            return ValidateEndPoints();
         }
 
-        private bool InitializeEndPoints()
+        private bool ValidateEndPoints()
         {
             var endPoints = mapGenerator.GetMapSaveData().EndPoints;
             bool isUniqueStarts = !endPoints.GroupBy(p => p.Start).SelectMany(g => g.Skip(1)).Any();
             bool isUniqueGoals = !endPoints.GroupBy(p => p.Goal).SelectMany(g => g.Skip(1)).Any();
             bool isUniquePoints = isUniqueStarts && isUniqueGoals;
 
-            if (isUniquePoints)
-            {
-                PaintEndPoints(endPoints);
-            }
-            else
+            if (!isUniquePoints)
             {
                 Debug.LogError("スタートとゴールのデータが重複しています。");
             }
@@ -56,13 +53,18 @@ namespace PathFinding
             return mapGenerator.GetMapSaveData().EndPoints;
         }
 
-        public void PaintPath(List<int> path)
+        public void PaintPath(Agent agent, List<int> path)
         {
             IReadOnlyList<EndPoint> endPoints = GetEndPoints();
             int[] endPointNodes = endPoints.Select(point => GetNode(point.Start))
                 .Concat(endPoints.Select(point => GetNode(point.Goal)))
                 .ToArray();
 
+            //スタートとゴールに色付け
+            GetCell(path[0]).SetEndPoint(colors[agent.Index]);
+            GetCell(path[path.Count - 1]).SetEndPoint(colors[agent.Index]);
+
+            //パスに色付け
             for (var i = 1; i < path.Count - 1; i++)
             {
                 var node = path[i];
@@ -72,19 +74,6 @@ namespace PathFinding
                     Cell cell = GetCell(node);
                     cell.SetColor(pathColor);
                 }
-            }
-        }
-
-        private void PaintEndPoints(IReadOnlyList<EndPoint> endPoints)
-        {
-            foreach (EndPoint endPoint in endPoints)
-            {
-                //スタートとゴールに色を付ける
-                int startNode = GetNode(endPoint.Start);
-                int goalNode = GetNode(endPoint.Goal);
-
-                GetCell(startNode).SetColor(startColor);
-                GetCell(goalNode).SetColor(endColor);
             }
         }
 

@@ -10,12 +10,14 @@ namespace PathFinding
     {
         public readonly bool IsPassable;
         public readonly Renderer Renderer;
+        public readonly Renderer EndPointRenderer;
         public readonly Color DefaultColor;
 
-        public Cell(bool isPassable, Renderer renderer, Color defaultColor, Color color)
+        public Cell(bool isPassable, Renderer renderer, Renderer endPointRenderer, Color defaultColor, Color color)
         {
             IsPassable = isPassable;
             Renderer = renderer;
+            EndPointRenderer = endPointRenderer;
             DefaultColor = defaultColor;
             SetColor(color);
         }
@@ -25,9 +27,16 @@ namespace PathFinding
             Renderer.material.color = color;
         }
 
+        public void SetEndPoint(Color color)
+        {
+            EndPointRenderer.gameObject.SetActive(true);
+            EndPointRenderer.material.color = color;
+        }
+
         public void ResetColor()
         {
             Renderer.material.color = DefaultColor;
+            EndPointRenderer.gameObject.SetActive(false);
         }
     }
 
@@ -167,6 +176,7 @@ namespace PathFinding
 
                     GameObject cube = Instantiate(prefab, transform);
                     Renderer rend = cube.GetComponent<Renderer>();
+                    Renderer endPointRend = cube.transform.GetChild(0).GetComponent<Renderer>();
                     cube.transform.position = position;
 
                     Grid grid = cube.GetComponent<Grid>();
@@ -175,7 +185,7 @@ namespace PathFinding
 
                     Color defaultColor = (x + z) % 2 != 0 ? firstColor : secondColor;
                     Color color = isPassable ? defaultColor : obstacleColor;
-                    Cell cell = new Cell(isPassable, rend, defaultColor, color);
+                    Cell cell = new Cell(isPassable, rend, endPointRend, defaultColor, color);
 
                     cells.Add(cell);
 
