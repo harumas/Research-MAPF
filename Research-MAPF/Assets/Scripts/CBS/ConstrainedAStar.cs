@@ -56,6 +56,15 @@ namespace PathFinding.CBS
                     //制約に引っかかったらスキップ
                     if (constraints.Exists(state => state.Node.Index == neighbour.Index && state.Time == nextGCost))
                     {
+                        // cameFrom[node.Index] = node.Index;
+                        // gCosts[node.Index] = nextGCost;
+                        // fCosts[node.Index] = nextGCost + Heuristic(node, nodes[end]);
+                        //
+                        // if (openSet.All(n => n.node != node.Index))
+                        // {
+                        //     openSet.Add((fCosts[node.Index], node.Index));
+                        // }
+                        //
                         continue;
                     }
 
@@ -69,25 +78,6 @@ namespace PathFinding.CBS
                         if (openSet.All(n => n.node != neighbour.Index))
                         {
                             openSet.Add((fCosts[neighbourIndex], neighbourIndex));
-                        }
-                    }
-
-                    // 待機の選択肢を追加
-                    int nextGCostWait = gCosts[node.Index] + 1;
-                    if (constraints.Exists(state => state.Node.Index == node.Index && state.Time == nextGCostWait))
-                    {
-                        continue;
-                    }
-
-                    if (!gCosts.ContainsKey(node.Index) || nextGCostWait < gCosts[node.Index])
-                    {
-                        cameFrom[node.Index] = node.Index;
-                        gCosts[node.Index] = nextGCostWait;
-                        fCosts[node.Index] = nextGCostWait + Heuristic(node, nodes[end]);
-
-                        if (openSet.All(n => n.node != node.Index))
-                        {
-                            openSet.Add((fCosts[node.Index], node.Index));
                         }
                     }
                 }
