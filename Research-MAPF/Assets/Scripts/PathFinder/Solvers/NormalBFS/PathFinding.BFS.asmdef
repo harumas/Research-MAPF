@@ -1,0 +1,16 @@
+{
+    "name": "PathFinding.BFS",
+    "rootNamespace": "",
+    "references": [
+        "GUID:5f56e07fc20fffe44a8f398792d1cac5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}
