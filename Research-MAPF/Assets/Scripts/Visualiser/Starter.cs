@@ -56,6 +56,12 @@ namespace Visualiser
             ISolver solver = solvers[findStrategy];
             agentPathList = solver.Solve(solveContexts);
 
+            if (agentPathList == null)
+            {
+                Debug.LogError("Can't Solve!");
+                return;
+            }
+
             //エージェントにパスを設定
             foreach ((int agentIndex, List<int> path) in agentPathList)
             {

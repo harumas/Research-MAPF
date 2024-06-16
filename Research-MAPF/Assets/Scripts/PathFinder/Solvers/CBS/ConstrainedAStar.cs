@@ -42,25 +42,19 @@ namespace PathFinder.Solvers.CBS
                     return RetracePath(cameFrom, node.Index);
                 }
 
+                bool conflict = false;
                 foreach (int neighbourIndex in graph.GetNextNodes(node.Index))
                 {
                     Node neighbour = nodes[neighbourIndex];
                     int nextGCost = gCosts[node.Index] + 1;
 
                     //制約に引っかかったらスキップ
-                    int index = constraints.FindIndex(state => state.Node.Index == neighbour.Index && (state.Time == nextGCost || state.Time == -1));
+                    int index = constraints.FindIndex(state => state.Node == neighbour && (state.Time == nextGCost || state.Time == -1));
                     if (index != -1)
                     {
                         if (constraints[index].Time != -1)
                         {
-                            cameFrom[nextGCost] = node.Index;
-                            gCosts[node.Index] += 1;
-                            fCosts[node.Index] += 1;
-
-                            if (openList.All(n => n.node != node.Index))
-                            {
-                                openList.Enqueue((fCosts[node.Index], node.Index));
-                            }
+                            conflict = true;
                         }
 
                         continue;
@@ -79,6 +73,19 @@ namespace PathFinder.Solvers.CBS
                         }
                     }
                 }
+
+                // if (conflict)
+                // {
+                //     int nextGCost = gCosts[node.Index] + 1;
+                //     cameFrom[nextGCost] = node.Index;
+                //     gCosts[node.Index] += 1;
+                //     fCosts[node.Index] += 1;
+                //
+                //     if (openList.All(n => n.node != node.Index))
+                //     {
+                //         openList.Enqueue((fCosts[node.Index], node.Index));
+                //     }
+                // }
             }
 
             //パスを見つけられなかったらnull

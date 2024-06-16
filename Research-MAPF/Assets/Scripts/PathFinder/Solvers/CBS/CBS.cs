@@ -8,6 +8,7 @@ namespace PathFinder.Solvers.CBS
     {
         private readonly ConstrainedAStar pathFinder;
         private readonly ConflictFinder conflictFinder;
+        private const int MaxSolveCount = 2048;
 
         public CBS(Graph graph, List<Node> nodes)
         {
@@ -29,8 +30,12 @@ namespace PathFinder.Solvers.CBS
 
             openList.Add(node);
 
-            while (openList.Count > 0)
+            int solveCount = 0;
+
+            while (openList.Count > 0 && solveCount <= MaxSolveCount)
             {
+                solveCount++;
+
                 node = GetMinCostNode(openList);
                 openList.Remove(node);
 
@@ -77,6 +82,12 @@ namespace PathFinder.Solvers.CBS
                         openList.Add(newNode);
                     }
                 }
+            }
+
+            //解決できなかった
+            if (resultNode == null)
+            {
+                return null;
             }
 
             List<(int agentIndex, List<int> path)> results = new List<(int agentIndex, List<int> path)>(contexts.Count);

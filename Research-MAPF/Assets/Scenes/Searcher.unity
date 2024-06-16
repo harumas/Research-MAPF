@@ -549,7 +549,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultHeight: 15
   defaultWidth: 15
-  mapData: {fileID: 11400000, guid: c362a85ff39e01648af314216a56a441, type: 2}
+  mapData: {fileID: 11400000, guid: 0f0569d2a1bec1e40ae294db8df1ca47, type: 2}
   prefab: {fileID: 1236299213508412820, guid: d2d59c25e86df7a418d67ca0aa6576d4, type: 3}
   mapIndexPrefab: {fileID: 5525833261287168820, guid: 7ef5de742d47da648a61bad066d3ae6e,
     type: 3}
