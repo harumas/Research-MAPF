@@ -3,10 +3,16 @@ using System.Numerics;
 
 namespace PathFinder.Core
 {
-    public readonly struct Node
+    public class Node : IEquatable<Node>
     {
         public readonly int Index;
         public readonly Vector2 Position;
+
+        public int Time { get; set; }
+        public int G { get; set; }
+        public float H { get; set; }
+        public float F => G + H;
+        public Node Parent { get; set; }
 
         public Node(int index, Vector2 position)
         {
@@ -14,22 +20,32 @@ namespace PathFinder.Core
             Position = position;
         }
 
-        public static bool operator ==(Node a, Node b) => a.Index == b.Index;
-        public static bool operator !=(Node a, Node b) => !(a == b);
+        public Node Clone()
+        {
+            return new Node(Index, Position) { Time = Time, G = G, H = H, Parent = Parent };
+        }
+
+        public void Reset()
+        {
+            Time = 0;
+            G = 0;
+            H = 0;
+            Parent = null;
+        }
 
         public bool Equals(Node other)
         {
-            return Index == other.Index;
-        }
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
 
-        public override bool Equals(object obj)
-        {
-            return obj is Node other && Equals(other);
-        }
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Index, Position);
+            return Index == other.Index && Position.Equals(other.Position) && Time == other.Time;
         }
     }
 }

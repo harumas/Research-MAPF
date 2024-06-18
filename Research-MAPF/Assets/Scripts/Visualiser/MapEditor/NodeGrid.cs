@@ -5,7 +5,7 @@ namespace Visualiser.MapEditor
 {
     public class NodeGrid : MonoBehaviour
     {
-        public Vector2 Position => transform.localPosition;
+        public Vector3 Position => transform.localPosition;
         public bool IsPassable { get; private set; }
         public Color DefaultColor { get; private set; }
 
@@ -42,12 +42,12 @@ namespace Visualiser.MapEditor
         {
             if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
             {
-                OnSelected?.Invoke(new Vector2Int((int)Position.x, (int)Position.y));
+                OnSelected?.Invoke(new Vector2Int((int)Position.x, (int)Position.z));
             }
 
             if (Input.GetMouseButtonDown(1) || Input.GetMouseButton(1))
             {
-                OnUnselected?.Invoke(new Vector2Int((int)Position.x, (int)Position.y));
+                OnUnselected?.Invoke(new Vector2Int((int)Position.x, (int)Position.z));
             }
 
             //デバッグ用

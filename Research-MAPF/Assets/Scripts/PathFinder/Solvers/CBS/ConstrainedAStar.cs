@@ -21,35 +21,45 @@ namespace PathFinder.Solvers.CBS
             List<Constraint> constraints
         )
         {
+            foreach (Node node in nodes)
+            {
+                node.Reset();
+            }
+
             Node startNode = nodes[start];
             Node targetNode = nodes[end];
 
-            PriorityQueue<float, (float f, int node)> openList = new PriorityQueue<float, (float f, int node)>(item => item.f, false);
-            openList.Enqueue((0, start));
+            startNode.Time = 0;
+            startNode.G = 0;
+            startNode.H = Heuristic(startNode, targetNode);
 
-            SortedDictionary<int, int> cameFrom = new SortedDictionary<int, int>();
-            Dictionary<int, int> gCosts = new Dictionary<int, int> { [start] = 0 };
-            Dictionary<int, float> fCosts = new Dictionary<int, float> { [start] = Heuristic(startNode, targetNode) };
+            PriorityQueue<float, (float f, Node node)> openList = new PriorityQueue<float, (float f, Node node)>(item => item.f, false);
+            openList.Enqueue((0, startNode));
+
+            HashSet<Node> closedList = new HashSet<Node>(new NodeComparer());
 
             while (openList.Count > 0)
             {
-                Node node = nodes[openList.Dequeue().node];
+                Node node = openList.Dequeue().node;
+                closedList.Add(node);
 
                 //ゴールに到達したら
                 if (node == targetNode)
                 {
                     //親まで辿ってパスを返す
-                    return RetracePath(cameFrom, node.Index);
+                    return RetracePath(node);
                 }
 
                 bool conflict = false;
+                int newTime = node.Time + 1;
+                int newG = node.G + 1;
+
                 foreach (int neighbourIndex in graph.GetNextNodes(node.Index))
                 {
                     Node neighbour = nodes[neighbourIndex];
-                    int nextGCost = gCosts[node.Index] + 1;
 
                     //制約に引っかかったらスキップ
-                    int index = constraints.FindIndex(state => state.Node == neighbour && (state.Time == nextGCost || state.Time == -1));
+                    int index = constraints.FindIndex(state => state.Node.Index == neighbour.Index && (state.Time == newTime || state.Time == -1));
                     if (index != -1)
                     {
                         if (constraints[index].Time != -1)
@@ -60,33 +70,40 @@ namespace PathFinder.Solvers.CBS
                         continue;
                     }
 
-                    //ゴール方向に近づくノードだったら
-                    if (!gCosts.ContainsKey(neighbourIndex) || nextGCost < gCosts[neighbourIndex])
+                    if (closedList.Contains(neighbour))
                     {
-                        cameFrom[nextGCost] = node.Index;
-                        gCosts[neighbourIndex] = nextGCost;
-                        fCosts[neighbourIndex] = nextGCost + Heuristic(neighbour, targetNode);
+                        continue;
+                    }
 
-                        if (openList.All(n => n.node != neighbour.Index))
-                        {
-                            openList.Enqueue((fCosts[neighbourIndex], neighbourIndex));
-                        }
+                    if (openList.All(n => n.node.Index != neighbour.Index))
+                    {
+                        neighbour.Parent = node;
+                        neighbour.G = newG;
+                        neighbour.H = Heuristic(neighbour, targetNode);
+                        openList.Enqueue((neighbour.F, neighbour));
+                    }
+                    else if (newG < neighbour.G)
+                    {
+                        neighbour.Parent = node;
+                        neighbour.G = newG;
                     }
                 }
 
-                // if (conflict)
-                // {
-                //     int nextGCost = gCosts[node.Index] + 1;
-                //     cameFrom[nextGCost] = node.Index;
-                //     gCosts[node.Index] += 1;
-                //     fCosts[node.Index] += 1;
-                //
-                //     if (openList.All(n => n.node != node.Index))
-                //     {
-                //         openList.Enqueue((fCosts[node.Index], node.Index));
-                //     }
-                // }
+                if (conflict)
+                {
+                    Node newNode = node.Clone();
+                    newNode.Time = newTime;
+                    newNode.G = newG;
+                    newNode.H = Heuristic(node, targetNode);
+                    newNode.Parent = node;
+
+                    if (openList.All(n => n.node.Index != node.Index))
+                    {
+                        openList.Enqueue((node.F, node));
+                    }
+                }
             }
+
 
             //パスを見つけられなかったらnull
             return null;
@@ -98,21 +115,31 @@ namespace PathFinder.Solvers.CBS
             return magnitude;
         }
 
-        private List<Node> RetracePath(SortedDictionary<int, int> cameFrom, int current)
+        private List<Node> RetracePath(Node current)
         {
-            List<Node> path = new List<Node> { };
+            var path = new List<Node>();
 
-            int goal = current;
-
-            foreach (int node in cameFrom.Select(item => item.Value))
+            while (current != null)
             {
-                current = node;
-                path.Add(nodes[current]);
+                path.Add(current);
+                current = current.Parent;
             }
 
-            path.Add(nodes[goal]);
-
+            path.Reverse();
             return path;
+        }
+    }
+
+    public class NodeComparer : IEqualityComparer<Node>
+    {
+        public bool Equals(Node a, Node b)
+        {
+            return b != null && a != null && a.Position == b.Position && a.Time == b.Time;
+        }
+
+        public int GetHashCode(Node obj)
+        {
+            return obj.Position.GetHashCode() ^ obj.Time.GetHashCode();
         }
     }
 }
