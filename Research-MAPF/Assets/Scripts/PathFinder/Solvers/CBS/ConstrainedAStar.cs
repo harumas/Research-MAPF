@@ -51,15 +51,16 @@ namespace PathFinder.Solvers.CBS
                 }
 
                 bool conflict = false;
-                int newTime = node.Time + 1;
-                int newG = node.G + 1;
 
                 foreach (int neighbourIndex in graph.GetNextNodes(node.Index))
                 {
                     Node neighbour = nodes[neighbourIndex];
+                    int newG = node.G + 1;
 
                     //制約に引っかかったらスキップ
-                    int index = constraints.FindIndex(state => state.Node.Index == neighbour.Index && (state.Time == newTime || state.Time == -1));
+                    int index = constraints.FindIndex(state =>
+                        state.Node.Index == neighbour.Index && (state.Time == node.Time + 1 || state.Time == -1));
+
                     if (index != -1)
                     {
                         if (constraints[index].Time != -1)
@@ -75,11 +76,12 @@ namespace PathFinder.Solvers.CBS
                         continue;
                     }
 
-                    if (openList.All(n => n.node.Index != neighbour.Index))
+                    if (openList.All(n => n.node.Index != neighbour.Index && n.node.Time != neighbour.Time))
                     {
                         neighbour.Parent = node;
                         neighbour.G = newG;
                         neighbour.H = Heuristic(neighbour, targetNode);
+                        neighbour.Time = node.Time + 1;
                         openList.Enqueue((neighbour.F, neighbour));
                     }
                     else if (newG < neighbour.G)
@@ -91,15 +93,22 @@ namespace PathFinder.Solvers.CBS
 
                 if (conflict)
                 {
+                    int newG = node.G + 1;
+
                     Node newNode = node.Clone();
-                    newNode.Time = newTime;
+                    newNode.Time = node.Time + 1;
                     newNode.G = newG;
                     newNode.H = Heuristic(node, targetNode);
                     newNode.Parent = node;
 
-                    if (openList.All(n => n.node.Index != node.Index))
+                    if (openList.All(n => n.node.Index != newNode.Index && n.node.Time != newNode.Time))
                     {
-                        openList.Enqueue((node.F, node));
+                        openList.Enqueue((newNode.F, newNode));
+                    }
+                    else if (newG < node.G)
+                    {
+                        node.Parent = newNode;
+                        node.G = newG;
                     }
                 }
             }
