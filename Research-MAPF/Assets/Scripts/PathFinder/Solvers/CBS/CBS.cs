@@ -4,11 +4,14 @@ using PathFinder.Core;
 
 namespace PathFinder.Solvers.CBS
 {
+    /// <summary>
+    /// Conflict Based Search Algorithm
+    /// </summary>
     public class CBS : ISolver
     {
         private readonly ConstrainedAStar pathFinder;
         private readonly ConflictFinder conflictFinder;
-        private const int MaxSolveCount = 2048;
+        private const int maxSolveCount = 2048;
 
         public CBS(Graph graph, List<Node> nodes)
         {
@@ -32,7 +35,8 @@ namespace PathFinder.Solvers.CBS
 
             int solveCount = 0;
 
-            while (openList.Count > 0 && solveCount <= MaxSolveCount)
+            // maxSolveCountを超えたら探索終了
+            while (openList.Count > 0 && solveCount <= maxSolveCount)
             {
                 solveCount++;
 
@@ -44,6 +48,7 @@ namespace PathFinder.Solvers.CBS
                 //衝突がなかったら終了
                 if (conflicts.Count == 0)
                 {
+                    //探索結果が0 or 前の結果より小さいコストのSolutionが見つかった
                     if (resultNode == null || node.Cost < resultNode.Cost)
                     {
                         resultNode = node;
@@ -56,20 +61,20 @@ namespace PathFinder.Solvers.CBS
                 {
                     foreach (int agentID in conflict.Agents)
                     {
-                        // copy constraints
+                        // 前の制約のコピー
                         List<Constraint>[] newConstraints = new List<Constraint>[agentCount];
                         for (int i = 0; i < newConstraints.Length; i++)
                         {
                             newConstraints[i] = new List<Constraint>(node.Constraints[i]);
                         }
 
-                        // add new constraint
+                        // 制約の追加
                         newConstraints[agentID].Add(new Constraint(conflict.Node, conflict.Time));
 
-                        // solve with new constraints
+                        // 新しい制約を元に解決
                         List<List<Node>> newSolution = GetSolution(contexts, newConstraints, agentID);
 
-                        //解決できなかった場合はスキップ
+                        // 解決できなかった場合はスキップ
                         if (newSolution.Any(sol => sol == null))
                         {
                             continue;
@@ -77,19 +82,20 @@ namespace PathFinder.Solvers.CBS
 
                         int newCost = solution.Sum(path => path.Count);
 
-                        // add new node
+                        // 解決したノードを追加
                         ConstraintNode newNode = new ConstraintNode(newConstraints, newSolution, newCost);
                         openList.Add(newNode);
                     }
                 }
             }
 
-            //解決できなかった
+            // 解決できなかった
             if (resultNode == null)
             {
                 return null;
             }
 
+            //エージェントとパス情報の作成
             List<(int agentIndex, List<int> path)> results = new List<(int agentIndex, List<int> path)>(contexts.Count);
 
             for (int i = 0; i < contexts.Count; i++)

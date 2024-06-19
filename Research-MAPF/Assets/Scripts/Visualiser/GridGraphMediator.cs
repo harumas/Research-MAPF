@@ -8,11 +8,14 @@ using Wanna.DebugEx;
 
 namespace Visualiser
 {
+    /// <summary>
+    /// シーン上のグリッドとグラフを仲介するクラス
+    /// </summary>
     public class GridGraphMediator : MonoBehaviour
     {
         public List<Color> Colors => colors;
 
-        [SerializeField] private List<Color> colors;
+        [Header("エージェントの色")] [SerializeField] private List<Color> colors;
         [SerializeField] private Color pathColor;
         [SerializeField] private MapGenerator mapGenerator;
         [SerializeField] private bool showNodeIndex;
@@ -36,122 +39,6 @@ namespace Visualiser
             nodeIndexList = CreateNodeIndexList();
             indexNodeList = nodeIndexList.ToDictionary(x => x.Value, x => x.Key);
             return ValidateEndPoints();
-        }
-
-        private void OnDrawGizmos()
-        {
-            if (showNodeIndex)
-            {
-                foreach (int node in nodeIndexList.Keys)
-                {
-                    Vector2Int pos = GetPos(node);
-                    Vector3 offset = new Vector3(-0.4f, 0f, 1f);
-                    Handles.Label(new Vector3(pos.x, 0f, pos.y) + mapGenerator.transform.position + offset, node.ToString().Color(Color.red),
-                        new GUIStyle() { richText = true });
-                }
-            }
-        }
-
-        private bool ValidateEndPoints()
-        {
-            var endPoints = mapGenerator.GetMapSaveData().EndPoints;
-            bool isUniqueStarts = !endPoints.GroupBy(p => p.Start).SelectMany(g => g.Skip(1)).Any();
-            bool isUniqueGoals = !endPoints.GroupBy(p => p.Goal).SelectMany(g => g.Skip(1)).Any();
-            bool isUniquePoints = isUniqueStarts && isUniqueGoals;
-
-            if (!isUniquePoints)
-            {
-                Debug.LogError("スタートとゴールのデータが重複しています。");
-            }
-
-            return isUniquePoints;
-        }
-
-        public IReadOnlyList<EndPoint> GetEndPoints()
-        {
-            return mapGenerator.GetMapSaveData().EndPoints;
-        }
-
-        public void PaintEndPoints()
-        {
-            IReadOnlyList<EndPoint> endPoints = GetEndPoints();
-            
-            for (var i = 0; i < endPoints.Count; i++)
-            {
-                EndPoint endPoint = endPoints[i];
-                //スタートとゴールに色付け
-                GetGrid(GetNode(endPoint.Start)).ActivateEndPoint(colors[i]);
-                GetGrid(GetNode(endPoint.Goal)).ActivateEndPoint(colors[i]);
-            }
-        }
-
-        public void PaintPath(List<int> path)
-        {
-            IReadOnlyList<EndPoint> endPoints = GetEndPoints();
-            int[] endPointNodes = endPoints.Select(point => GetNode(point.Start))
-                .Concat(endPoints.Select(point => GetNode(point.Goal)))
-                .ToArray();
-
-            //パスに色付け
-            for (var i = 1; i < path.Count - 1; i++)
-            {
-                var node = path[i];
-
-                if (!endPointNodes.Contains(node))
-                {
-                    NodeGrid grid = GetGrid(node);
-                    grid.SetColor(pathColor);
-                }
-            }
-        }
-
-        public int GetNode(int index)
-        {
-            return indexNodeList[index];
-        }
-
-        public int GetNode(Vector2Int pos)
-        {
-            int index = pos.y * mapData.Width + pos.x;
-            return indexNodeList[index];
-        }
-
-        public int GetIndex(int node)
-        {
-            return nodeIndexList[node];
-        }
-
-        public Vector2Int GetPos(int node)
-        {
-            int index = nodeIndexList[node];
-            return new Vector2Int(index % mapData.Width, index / mapData.Width);
-        }
-
-        public NodeGrid GetGrid(int node)
-        {
-            return mapData.Grids[GetIndex(node)];
-        }
-
-        private Dictionary<int, int> CreateNodeIndexList()
-        {
-            Dictionary<int, int> list = new Dictionary<int, int>();
-
-            int nodeCount = 0;
-            for (int y = 0; y < mapData.Height; y++)
-            {
-                for (int x = 0; x < mapData.Width; x++)
-                {
-                    int index = y * mapData.Width + x;
-                    NodeGrid grid = mapData.Grids[index];
-
-                    if (grid.IsPassable)
-                    {
-                        list.Add(nodeCount++, index);
-                    }
-                }
-            }
-
-            return list;
         }
 
         public Graph ConstructGraph()
@@ -192,6 +79,122 @@ namespace Visualiser
             }
 
             return graph;
+        }
+
+        public IReadOnlyList<EndPoint> GetEndPoints()
+        {
+            return mapGenerator.GetMapSaveData().EndPoints;
+        }
+
+        public void PaintEndPoints()
+        {
+            IReadOnlyList<EndPoint> endPoints = GetEndPoints();
+
+            for (var i = 0; i < endPoints.Count; i++)
+            {
+                EndPoint endPoint = endPoints[i];
+                //スタートとゴールに色付け
+                GetGrid(GetNode(endPoint.Start)).ActivateEndPoint(colors[i]);
+                GetGrid(GetNode(endPoint.Goal)).ActivateEndPoint(colors[i]);
+            }
+        }
+
+        public void PaintPath(List<int> path)
+        {
+            IReadOnlyList<EndPoint> endPoints = GetEndPoints();
+            int[] endPointNodes = endPoints.Select(point => GetNode(point.Start))
+                .Concat(endPoints.Select(point => GetNode(point.Goal)))
+                .ToArray();
+
+            //パスに色付け
+            for (var i = 1; i < path.Count - 1; i++)
+            {
+                var node = path[i];
+
+                if (!endPointNodes.Contains(node))
+                {
+                    NodeGrid grid = GetGrid(node);
+                    grid.SetColor(pathColor);
+                }
+            }
+        }
+
+        public int GetNode(Vector2Int pos)
+        {
+            int index = pos.y * mapData.Width + pos.x;
+            return indexNodeList[index];
+        }
+
+        public Vector2Int GetPos(int node)
+        {
+            int index = nodeIndexList[node];
+            return new Vector2Int(index % mapData.Width, index / mapData.Width);
+        }
+
+        private int GetNode(int index)
+        {
+            return indexNodeList[index];
+        }
+
+        private int GetIndex(int node)
+        {
+            return nodeIndexList[node];
+        }
+
+        private NodeGrid GetGrid(int node)
+        {
+            return mapData.Grids[GetIndex(node)];
+        }
+
+        private bool ValidateEndPoints()
+        {
+            var endPoints = mapGenerator.GetMapSaveData().EndPoints;
+            bool isUniqueStarts = !endPoints.GroupBy(p => p.Start).SelectMany(g => g.Skip(1)).Any();
+            bool isUniqueGoals = !endPoints.GroupBy(p => p.Goal).SelectMany(g => g.Skip(1)).Any();
+            bool isUniquePoints = isUniqueStarts && isUniqueGoals;
+
+            if (!isUniquePoints)
+            {
+                Debug.LogError("スタートとゴールのデータが重複しています。");
+            }
+
+            return isUniquePoints;
+        }
+
+        private Dictionary<int, int> CreateNodeIndexList()
+        {
+            Dictionary<int, int> list = new Dictionary<int, int>();
+
+            int nodeCount = 0;
+            for (int y = 0; y < mapData.Height; y++)
+            {
+                for (int x = 0; x < mapData.Width; x++)
+                {
+                    int index = y * mapData.Width + x;
+                    NodeGrid grid = mapData.Grids[index];
+
+                    if (grid.IsPassable)
+                    {
+                        list.Add(nodeCount++, index);
+                    }
+                }
+            }
+
+            return list;
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (showNodeIndex)
+            {
+                foreach (int node in nodeIndexList.Keys)
+                {
+                    Vector2Int pos = GetPos(node);
+                    Vector3 offset = new Vector3(-0.4f, 0f, 1f);
+                    Handles.Label(new Vector3(pos.x, 0f, pos.y) + mapGenerator.transform.position + offset, node.ToString().Color(Color.red),
+                        new GUIStyle() { richText = true });
+                }
+            }
         }
     }
 }

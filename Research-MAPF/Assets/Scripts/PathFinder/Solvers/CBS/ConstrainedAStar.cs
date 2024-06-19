@@ -4,6 +4,9 @@ using PathFinder.Core;
 
 namespace PathFinder.Solvers.CBS
 {
+    /// <summary>
+    /// 制約を考慮するA*アルゴリズム
+    /// </summary>
     public class ConstrainedAStar
     {
         private readonly Graph graph;
@@ -21,22 +24,18 @@ namespace PathFinder.Solvers.CBS
             List<Constraint> constraints
         )
         {
-            foreach (Node node in nodes)
-            {
-                node.Reset();
-            }
-
+            ResetNodes();
+            var openList = new PriorityQueue<float, (float f, Node node)>(item => item.f, false);
+            var closedList = new HashSet<Node>(new NodeComparer());
+            
             Node startNode = nodes[start];
             Node targetNode = nodes[end];
 
+            //初期ノードの作成
             startNode.Time = 0;
             startNode.G = 0;
             startNode.H = Heuristic(startNode, targetNode);
-
-            PriorityQueue<float, (float f, Node node)> openList = new PriorityQueue<float, (float f, Node node)>(item => item.f, false);
             openList.Enqueue((0, startNode));
-
-            HashSet<Node> closedList = new HashSet<Node>(new NodeComparer());
 
             while (openList.Count > 0)
             {
@@ -57,13 +56,14 @@ namespace PathFinder.Solvers.CBS
                     Node neighbour = nodes[neighbourIndex];
                     int newG = node.G + 1;
 
-                    //制約に引っかかったらスキップ
+                    // 制約に引っかかったらスキップ
                     if (constraints.Exists(state => state.Node.Index == neighbour.Index && (state.Time == node.Time + 1 || state.Time == -1)))
                     {
                         conflict = true;
                         continue;
                     }
 
+                    // 探索済みであればスキップ
                     if (closedList.Contains(neighbour))
                     {
                         continue;
@@ -75,6 +75,7 @@ namespace PathFinder.Solvers.CBS
                         neighbour.G = newG;
                         neighbour.H = Heuristic(neighbour, targetNode);
                         neighbour.Time = node.Time + 1;
+                        
                         openList.Enqueue((neighbour.F, neighbour));
                     }
                     else if (newG < neighbour.G)
@@ -84,15 +85,17 @@ namespace PathFinder.Solvers.CBS
                     }
                 }
 
+                // 衝突したら待ちを考慮する
                 if (conflict)
                 {
                     int newG = node.G + 1;
 
                     Node newNode = node.Clone();
+                    newNode.Parent = node;
+
                     newNode.Time = node.Time + 1;
                     newNode.G = newG;
                     newNode.H = Heuristic(node, targetNode);
-                    newNode.Parent = node;
 
                     if (openList.All(n => n.node.Index != newNode.Index && n.node.Time != newNode.Time))
                     {
@@ -129,6 +132,14 @@ namespace PathFinder.Solvers.CBS
 
             path.Reverse();
             return path;
+        }
+
+        private void ResetNodes()
+        {
+            foreach (Node node in nodes)
+            {
+                node.Reset();
+            }
         }
     }
 

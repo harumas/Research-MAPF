@@ -3,6 +3,9 @@ using System.Numerics;
 
 namespace PathFinder.Core
 {
+    /// <summary>
+    /// 探索用ノード
+    /// </summary>
     public class Node : IEquatable<Node>
     {
         public readonly int Index;

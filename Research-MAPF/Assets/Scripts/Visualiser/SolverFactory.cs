@@ -7,6 +7,9 @@ using Vector2 = System.Numerics.Vector2;
 
 namespace Visualiser
 {
+    /// <summary>
+    /// 探索アルゴリズムを生成するクラス
+    /// </summary>
     public class SolverFactory
     {
         private readonly Graph graph;
@@ -20,6 +23,7 @@ namespace Visualiser
 
         public Dictionary<FindStrategy, ISolver> CreateSolvers()
         {
+            // 座標からアルゴリズムで使用するノードを作成
             List<Node> nodes = new List<Node>(graph.NodeCount);
 
             for (int i = 0; i < graph.NodeCount; i++)
@@ -28,6 +32,7 @@ namespace Visualiser
                 nodes.Add(new Node(i, new Vector2(pos.x, pos.y)));
             }
 
+            // 列挙体と一緒にアルゴリズムのインスタンスを作成する
             var solvers = new Dictionary<FindStrategy, ISolver>()
             {
                 { FindStrategy.NormalBFS, new NormalBFS(graph, nodes) },

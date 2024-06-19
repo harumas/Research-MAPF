@@ -15,10 +15,13 @@ namespace Visualiser
 
     public class Starter : MonoBehaviour
     {
+        [Header("探索アルゴリズム")]
+        [SerializeField] private FindStrategy findStrategy;
+        
+        [Header("インスタンス")]
         [SerializeField] private GridGraphMediator mediator;
         [SerializeField] private GameObject agentPrefab;
         [SerializeField] private Transform agentParent;
-        [SerializeField] private FindStrategy findStrategy;
 
         private bool isInitialized;
         private Dictionary<FindStrategy, ISolver> solvers;
@@ -29,14 +32,18 @@ namespace Visualiser
         private void Start()
         {
             isInitialized = mediator.Initialize();
+
+            // グラフを構築する
             Graph graph = mediator.ConstructGraph();
 
+            // 探索アルゴリズムの作成
             SolverFactory factory = new SolverFactory(graph, mediator);
             solvers = factory.CreateSolvers();
 
+            // スタートとゴールをマークする
             mediator.PaintEndPoints();
 
-            //検索用の情報を生成
+            // 検索用の情報を作成
             var endPoints = mediator.GetEndPoints();
             solveContexts = CreateContexts(endPoints);
         }
@@ -53,6 +60,7 @@ namespace Visualiser
             ISolver solver = solvers[findStrategy];
             agentPathList = solver.Solve(solveContexts);
 
+            //nullが帰ってきたら解決不能とする
             if (agentPathList == null)
             {
                 Debug.LogError("Can't Solve!");
@@ -69,6 +77,11 @@ namespace Visualiser
             }
         }
 
+        /// <summary>
+        /// Solverに渡すContextを作成します
+        /// </summary>
+        /// <param name="endPoints"></param>
+        /// <returns></returns>
         private List<SolveContext> CreateContexts(IReadOnlyList<EndPoint> endPoints)
         {
             List<SolveContext> contexts = new List<SolveContext>();
