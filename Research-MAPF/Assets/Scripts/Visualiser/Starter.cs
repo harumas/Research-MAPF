@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using PathFinder.Core;
-using PathFinder.Solvers.CBS;
-using PathFinder.Solvers.NormalBFS;
 using UnityEngine;
 using Visualiser.MapEditor;
-using Vector2 = System.Numerics.Vector2;
 
 
 namespace Visualiser

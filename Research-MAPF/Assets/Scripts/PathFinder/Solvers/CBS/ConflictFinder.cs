@@ -80,7 +80,8 @@ namespace PathFinder.Solvers.CBS
                 1: D E C G
                 同じ時間に同じマスに存在する場合(vertex conflict)
             */
-            if (paths[i][t] == paths[j][t])
+
+            if (paths[i][t].Index == paths[j][t].Index)
             {
                 List<int> agents = new List<int>();
                 agents.Add(i);
@@ -98,7 +99,7 @@ namespace PathFinder.Solvers.CBS
         {
             if (t + 1 < paths[i].Count && t + 1 < paths[j].Count)
             {
-                if (paths[i][t] == paths[j][t + 1] && paths[i][t + 1] == paths[j][t])
+                if (paths[i][t].Index == paths[j][t + 1].Index && paths[i][t + 1].Index == paths[j][t].Index)
                 {
                     List<int> curAgents = new List<int>();
                     curAgents.Add(i);
@@ -128,7 +129,7 @@ namespace PathFinder.Solvers.CBS
             if (t + 1 < paths[i].Count)
             {
                 //次に移動するマスに前のエージェントがいる場合
-                if (paths[i][t + 1] == paths[j][t])
+                if (paths[i][t + 1].Index == paths[j][t].Index)
                 {
                     List<int> agents = new List<int>();
                     agents.Add(i);
@@ -143,19 +144,19 @@ namespace PathFinder.Solvers.CBS
 
         private bool TryStaticConflict(List<List<Node>> paths, int t, int i, int j, out Conflict conflict)
         {
-            if (t > 0 && t < paths[j].Count && t >= paths[i].Count && paths[j][t] == paths[i][paths[i].Count - 1])
+            if (t > 0 && t < paths[j].Count && t >= paths[i].Count && paths[j][t].Index == paths[i][paths[i].Count - 1].Index)
             {
                 List<int> curAgents = new List<int>();
                 curAgents.Add(j);
-                conflict = new Conflict(curAgents, paths[i][paths[i].Count - 1], -1);
+                conflict = new Conflict(curAgents, paths[i][paths[i].Count - 1], t);
                 return true;
             }
 
-            if (t > 0 && t < paths[i].Count && t >= paths[j].Count && paths[i][t] == paths[j][paths[j].Count - 1])
+            if (t > 0 && t < paths[i].Count && t >= paths[j].Count && paths[i][t].Index == paths[j][paths[j].Count - 1].Index)
             {
                 List<int> curAgents = new List<int>();
                 curAgents.Add(i);
-                conflict = new Conflict(curAgents, paths[j][paths[j].Count - 1], -1);
+                conflict = new Conflict(curAgents, paths[j][paths[j].Count - 1], t);
                 return true;
             }
 

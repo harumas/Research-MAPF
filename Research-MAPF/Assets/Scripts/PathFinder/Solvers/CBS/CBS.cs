@@ -122,7 +122,8 @@ namespace PathFinder.Solvers.CBS
         private List<List<Node>> GetSolution(
             List<SolveContext> contexts,
             List<Constraint>[] constraints,
-            int currentAgent = -1)
+            int currentAgent = -1
+        )
         {
             List<List<Node>> solution = new List<List<Node>>();
             List<Node> constrainedPath = new List<Node>();

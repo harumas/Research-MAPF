@@ -549,7 +549,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultHeight: 15
   defaultWidth: 15
-  mapData: {fileID: 11400000, guid: 5c6e93d0c28f76f48bf9756cfd481817, type: 2}
+  mapData: {fileID: 11400000, guid: 241da360abcca424691a9fba8cd947cb, type: 2}
   prefab: {fileID: 1236299213508412820, guid: d2d59c25e86df7a418d67ca0aa6576d4, type: 3}
   mapIndexPrefab: {fileID: 5525833261287168820, guid: 7ef5de742d47da648a61bad066d3ae6e,
     type: 3}
@@ -732,7 +732,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: FindPath
+  m_text: Solve
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -956,7 +956,7 @@ GameObject:
   - component: {fileID: 1621024271}
   - component: {fileID: 1621024270}
   m_Layer: 5
-  m_Name: FindPath
+  m_Name: Solve
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

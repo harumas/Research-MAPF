@@ -58,16 +58,9 @@ namespace PathFinder.Solvers.CBS
                     int newG = node.G + 1;
 
                     //制約に引っかかったらスキップ
-                    int index = constraints.FindIndex(state =>
-                        state.Node.Index == neighbour.Index && (state.Time == node.Time + 1 || state.Time == -1));
-
-                    if (index != -1)
+                    if (constraints.Exists(state => state.Node.Index == neighbour.Index && (state.Time == node.Time + 1 || state.Time == -1)))
                     {
-                        if (constraints[index].Time != -1)
-                        {
-                            conflict = true;
-                        }
-
+                        conflict = true;
                         continue;
                     }
 
