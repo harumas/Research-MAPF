@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Data7
   m_EditorClassIdentifier: 
   endPoints:
-  - Start: {x: 6, y: 10}
+  - Start: {x: 6, y: 9}
     Goal: {x: 9, y: 7}
   - Start: {x: 6, y: 4}
     Goal: {x: 10, y: 7}
@@ -37,9 +37,9 @@ MonoBehaviour:
 
     .....*.*.......
 
-    .....*.*.......
-
     .....***.......
+
+    ...............
 
     ...............
 

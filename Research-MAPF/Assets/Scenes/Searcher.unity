@@ -513,11 +513,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d453d5a2d9fe417d8748f5e6ab310c52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  findStrategy: 1
   mediator: {fileID: 941433827}
   agentPrefab: {fileID: 732936753316495021, guid: 605fda224a7532f4fa13dfe090c7932a,
     type: 3}
   agentParent: {fileID: 1259301527}
-  findStrategy: 1
 --- !u!1 &1259301525
 GameObject:
   m_ObjectHideFlags: 0
@@ -549,7 +549,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultHeight: 15
   defaultWidth: 15
-  mapData: {fileID: 11400000, guid: 241da360abcca424691a9fba8cd947cb, type: 2}
+  mapData: {fileID: 11400000, guid: dbd1760b1487a924fa36675237389274, type: 2}
   prefab: {fileID: 1236299213508412820, guid: d2d59c25e86df7a418d67ca0aa6576d4, type: 3}
   mapIndexPrefab: {fileID: 5525833261287168820, guid: 7ef5de742d47da648a61bad066d3ae6e,
     type: 3}
