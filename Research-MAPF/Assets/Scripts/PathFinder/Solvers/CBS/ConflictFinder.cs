@@ -58,9 +58,10 @@ namespace PathFinder.Solvers.CBS
                             // }
                         }
 
-                        if (TryStaticConflict(paths, t, i, j, out Conflict sConflict))
+                        if (TryStaticConflict(paths, t, i, j, out Conflict sConflictI, out Conflict sConflictJ))
                         {
-                            conflicts.Add(sConflict);
+                            conflicts.Add(sConflictI);
+                            conflicts.Add(sConflictJ);
                             conflictFound = true;
                             continue;
                         }
@@ -142,25 +143,40 @@ namespace PathFinder.Solvers.CBS
             return false;
         }
 
-        private bool TryStaticConflict(List<List<Node>> paths, int t, int i, int j, out Conflict conflict)
+        private bool TryStaticConflict(List<List<Node>> paths, int t, int i, int j, out Conflict conflictI, out Conflict conflictJ)
         {
             if (t > 0 && t < paths[j].Count && t >= paths[i].Count && paths[j][t].Index == paths[i][paths[i].Count - 1].Index)
             {
+                Node conflictNode = paths[i][paths[i].Count - 1];
+
                 List<int> curAgents = new List<int>();
+                curAgents.Add(i);
+                conflictI = new Conflict(curAgents, conflictNode, paths[i].Count - 1);
+
+                curAgents = new List<int>();
                 curAgents.Add(j);
-                conflict = new Conflict(curAgents, paths[i][paths[i].Count - 1], t);
+                conflictJ = new Conflict(curAgents, conflictNode, -1);
+
                 return true;
             }
 
             if (t > 0 && t < paths[i].Count && t >= paths[j].Count && paths[i][t].Index == paths[j][paths[j].Count - 1].Index)
             {
+                Node conflictNode = paths[j][paths[j].Count - 1];
+
                 List<int> curAgents = new List<int>();
                 curAgents.Add(i);
-                conflict = new Conflict(curAgents, paths[j][paths[j].Count - 1], t);
+                conflictI = new Conflict(curAgents, conflictNode, -1);
+
+                curAgents = new List<int>();
+                curAgents.Add(j);
+                conflictJ = new Conflict(curAgents, conflictNode, paths[j].Count - 1);
+
                 return true;
             }
 
-            conflict = null;
+            conflictI = null;
+            conflictJ = null;
             return false;
         }
     }

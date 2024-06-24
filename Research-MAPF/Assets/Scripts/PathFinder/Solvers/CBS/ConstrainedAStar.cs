@@ -27,7 +27,7 @@ namespace PathFinder.Solvers.CBS
             ResetNodes();
             var openList = new PriorityQueue<float, (float f, Node node)>(item => item.f, false);
             var closedList = new HashSet<Node>(new NodeComparer());
-            
+
             Node startNode = nodes[start];
             Node targetNode = nodes[end];
 
@@ -57,9 +57,15 @@ namespace PathFinder.Solvers.CBS
                     int newG = node.G + 1;
 
                     // 制約に引っかかったらスキップ
-                    if (constraints.Exists(state => state.Node.Index == neighbour.Index && (state.Time == node.Time + 1 || state.Time == -1)))
+                    int index = constraints.FindIndex(state =>
+                        state.Node.Index == neighbour.Index && (state.Time == node.Time + 1 || state.Time == -1));
+                    if (index != -1)
                     {
-                        conflict = true;
+                        if (constraints[index].Time != -1)
+                        {
+                            conflict = true;
+                        }
+
                         continue;
                     }
 
@@ -75,7 +81,7 @@ namespace PathFinder.Solvers.CBS
                         neighbour.G = newG;
                         neighbour.H = Heuristic(neighbour, targetNode);
                         neighbour.Time = node.Time + 1;
-                        
+
                         openList.Enqueue((neighbour.F, neighbour));
                     }
                     else if (newG < neighbour.G)

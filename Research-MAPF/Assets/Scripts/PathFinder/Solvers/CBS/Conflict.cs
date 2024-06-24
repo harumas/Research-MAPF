@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using PathFinder.Core;
 
 namespace PathFinder.Solvers.CBS
@@ -14,6 +15,18 @@ namespace PathFinder.Solvers.CBS
             this.Node = node;
             this.Agents = new List<int>(agents);
             this.Time = time;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder builder = new StringBuilder();
+
+            foreach (int agent in Agents)
+            {
+                builder.Append($"{{{agent}, {Node.Index}, {Time}}}\n");
+            }
+
+            return builder.ToString();
         }
     }
 }

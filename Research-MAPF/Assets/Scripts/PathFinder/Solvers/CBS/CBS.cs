@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using PathFinder.Core;
+using UnityEngine;
+using Wanna.DebugEx;
 
 namespace PathFinder.Solvers.CBS
 {
@@ -71,6 +74,15 @@ namespace PathFinder.Solvers.CBS
                         // 制約の追加
                         newConstraints[agentID].Add(new Constraint(conflict.Node, conflict.Time));
 
+                        StringBuilder bu = new StringBuilder();
+                        
+                        foreach (Constraint co in newConstraints[agentID])
+                        {
+                            bu.Append($"{{{agentID}, {co.Node.Index}, {co.Time}}}\n");
+                        }
+
+                        Debug.Log(bu.ToString());
+
                         // 新しい制約を元に解決
                         List<List<Node>> newSolution = GetSolution(contexts, newConstraints, agentID);
 
@@ -78,6 +90,22 @@ namespace PathFinder.Solvers.CBS
                         if (newSolution.Any(sol => sol == null))
                         {
                             continue;
+                        }
+
+
+                        StringBuilder builder = new StringBuilder();
+
+                        foreach (List<Node> nodes in newSolution)
+                        {
+                            builder.Append("{");
+                            foreach (Node n in nodes)
+                            {
+                                builder.Append($"{n.Index:000}, ");
+                            }
+
+                            builder.Append("}");
+                            Debug.Log(builder.ToString());
+                            builder.Clear();
                         }
 
                         int newCost = solution.Sum(path => path.Count);
