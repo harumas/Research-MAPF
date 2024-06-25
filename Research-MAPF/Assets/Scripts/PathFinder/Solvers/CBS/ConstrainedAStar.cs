@@ -99,6 +99,8 @@ namespace PathFinder.Solvers.CBS
                     Node newNode = node.Clone();
                     newNode.Parent = node;
 
+                    graph.AddEdge(newNode.Index, newNode.Index);
+
                     newNode.Time = node.Time + 1;
                     newNode.G = newG;
                     newNode.H = Heuristic(node, targetNode);
