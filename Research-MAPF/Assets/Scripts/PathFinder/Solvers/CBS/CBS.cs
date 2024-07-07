@@ -89,9 +89,9 @@ namespace PathFinder.Solvers.CBS
                         // 解決できなかった場合はスキップ
                         if (newSolution.Any(sol => sol == null))
                         {
+                            Debug.Log("end");
                             continue;
                         }
-
 
                         StringBuilder builder = new StringBuilder();
 

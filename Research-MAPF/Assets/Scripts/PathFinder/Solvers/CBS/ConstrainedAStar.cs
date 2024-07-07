@@ -27,6 +27,7 @@ namespace PathFinder.Solvers.CBS
             ResetNodes();
             var openList = new PriorityQueue<float, (float f, Node node)>(item => item.f, false);
             var closedList = new HashSet<Node>(new NodeComparer());
+            var waitClosedList = new bool[graph.NodeCount];
 
             Node startNode = nodes[start];
             Node targetNode = nodes[end];
@@ -57,15 +58,8 @@ namespace PathFinder.Solvers.CBS
                     int newG = node.G + 1;
 
                     // 制約に引っかかったらスキップ
-                    int index = constraints.FindIndex(state =>
-                        state.Node.Index == neighbour.Index && (state.Time == node.Time + 1 || state.Time == -1));
-                    if (index != -1)
+                    if (constraints.Exists(state => state.Node.Index == neighbour.Index && (state.Time == node.Time + 1 || state.Time == -1)))
                     {
-                        if (constraints[index].Time != -1)
-                        {
-                            conflict = true;
-                        }
-
                         continue;
                     }
 
@@ -92,8 +86,13 @@ namespace PathFinder.Solvers.CBS
                 }
 
                 // 衝突したら待ちを考慮する
-                if (conflict)
+                if (!waitClosedList[node.Index])
                 {
+                    if (constraints.Exists(state => state.Node.Index == node.Index && (state.Time == node.Time + 1 || state.Time == -1)))
+                    {
+                        continue;
+                    }
+
                     int newG = node.G + 1;
 
                     Node newNode = node.Clone();
@@ -112,6 +111,8 @@ namespace PathFinder.Solvers.CBS
                         node.Parent = newNode;
                         node.G = newG;
                     }
+
+                    waitClosedList[node.Index] = true;
                 }
             }
 
