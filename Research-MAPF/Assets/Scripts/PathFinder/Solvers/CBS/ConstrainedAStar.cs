@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using PathFinder.Core;
+using UnityEngine;
 
 namespace PathFinder.Solvers.CBS
 {
@@ -98,21 +99,12 @@ namespace PathFinder.Solvers.CBS
                     Node newNode = node.Clone();
                     newNode.Parent = node;
 
-                    graph.AddEdge(newNode.Index, newNode.Index);
-
                     newNode.Time = node.Time + 1;
                     newNode.G = newG;
                     newNode.H = Heuristic(node, targetNode);
 
-                    if (openList.All(n => n.node.Index != newNode.Index && n.node.Time != newNode.Time))
-                    {
-                        openList.Enqueue((newNode.F, newNode));
-                    }
-                    else if (newG < node.G)
-                    {
-                        node.Parent = newNode;
-                        node.G = newG;
-                    }
+                    Debug.Log($"wait {newNode.Index}");
+                    openList.Enqueue((newNode.F, newNode));
 
                     waitClosedList[node.Index] = true;
                 }

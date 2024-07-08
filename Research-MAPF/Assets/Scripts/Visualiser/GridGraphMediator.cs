@@ -71,7 +71,7 @@ namespace Visualiser
 
                             if (to.IsPassable)
                             {
-                                graph.AddEdgeUnique(GetNode(fromIndex), GetNode(toIndex));
+                                graph.AddEdge(GetNode(fromIndex), GetNode(toIndex));
                             }
                         }
                     }

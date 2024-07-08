@@ -4,25 +4,17 @@ namespace PathFinder.Core
 {
     public class Graph
     {
-        private readonly List<int>[] graph;
+        private readonly HashSet<int>[] graph;
 
         public int NodeCount => graph.Length;
 
         public Graph(int capacity)
         {
-            graph = new List<int>[capacity];
+            graph = new HashSet<int>[capacity];
 
             for (var i = 0; i < graph.Length; i++)
             {
-                graph[i] = new List<int>(64);
-            }
-        }
-
-        public void AddEdgeUnique(int from, int to)
-        {
-            if (!graph[from].Contains(to))
-            {
-                graph[from].Add(to);
+                graph[i] = new HashSet<int>(64);
             }
         }
 
