@@ -7,7 +7,7 @@
 
 ## サンプルリポジトリ
 
-[Multi-Agent-Path-Finding](https://github.com/GavinPHR/Multi-Agent-Path-Finding)
+[Multi-Agent-Path-Finding](https://github.com/GavinPHR/Multi-Agent-Path-Finding)  
 [Multi-Agent path planning in Python](https://github.com/atb033/multi_agent_path_planning)
 
 ## 関連研究
