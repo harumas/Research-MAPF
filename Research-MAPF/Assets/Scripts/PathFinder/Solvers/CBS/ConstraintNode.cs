@@ -6,17 +6,13 @@ namespace PathFinder.Solvers.CBS
 {
     public class ConstraintNode
     {
-        public readonly List<Constraint>[] Constraints;
+        public readonly PriorityQueue<int, Constraint> Constraints;
         public readonly List<List<Node>> Solution = new List<List<Node>>();
         public readonly int Cost;
 
-        public ConstraintNode(List<Constraint>[] constraints, List<List<Node>> solution, int cost)
+        public ConstraintNode(PriorityQueue<int, Constraint> constraints, List<List<Node>> solution, int cost)
         {
-            Constraints = new List<Constraint>[constraints.Length];
-            for (int i = 0; i < Constraints.Length; i++)
-            {
-                Constraints[i] = new List<Constraint>(constraints[i]);
-            }
+            Constraints = constraints.Clone();
 
             foreach (List<Node> path in solution)
             {
@@ -28,7 +24,7 @@ namespace PathFinder.Solvers.CBS
 
         public int GetConstraintsCount()
         {
-            return Constraints.Sum(t => t.Count);
+            return Constraints.Count;
         }
     }
 }

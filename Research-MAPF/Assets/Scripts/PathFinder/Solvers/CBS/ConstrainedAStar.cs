@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using PathFinder.Core;
-using UnityEngine;
+using Constraint = PathFinder.Solvers.CBS.Constraint;
 
 namespace PathFinder.Solvers.CBS
 {
@@ -12,108 +12,86 @@ namespace PathFinder.Solvers.CBS
     {
         private readonly Graph graph;
         private readonly List<Node> nodes;
+        private readonly int timeout;
 
         public ConstrainedAStar(Graph graph, List<Node> nodes)
         {
             this.graph = graph;
             this.nodes = nodes;
+
+            timeout = 10;
         }
 
         public List<Node> FindPath(
+            int agentId,
             int start,
             int end,
-            List<Constraint> constraints
+            PriorityQueue<int, Constraint> constraints
         )
         {
             ResetNodes();
             var openList = new PriorityQueue<float, (float f, Node node)>(item => item.f, false);
-            var closedList = new HashSet<Node>(new NodeComparer());
-            var waitClosedList = new bool[graph.NodeCount];
 
             Node startNode = nodes[start];
             Node targetNode = nodes[end];
 
             //初期ノードの作成
             startNode.Time = 0;
-            startNode.G = 0;
             startNode.H = Heuristic(startNode, targetNode);
             openList.Enqueue((0, startNode));
 
             while (openList.Count > 0)
             {
                 Node node = openList.Dequeue().node;
-                closedList.Add(node);
 
                 //ゴールに到達したら
-                if (node == targetNode)
+                if (node.Index == targetNode.Index)
                 {
+                    var range = constraints.Where(c => c.Time >= node.Time);
+                    if (!Constraint::IsConstrained(agentId, node.Index, range))
+                    {
+                        continue;
+                    }
+
                     //親まで辿ってパスを返す
                     return RetracePath(node);
                 }
 
-                bool conflict = false;
+                if (timeout < node.Time)
+                {
+                    continue;
+                }
 
-                foreach (int neighbourIndex in graph.GetNextNodes(node.Index))
+                List<int> nextNodes = graph.GetNextNodes(node.Index).ToList();
+                nextNodes.Add(node.Index);
+
+                foreach (int neighbourIndex in nextNodes)
                 {
                     Node neighbour = nodes[neighbourIndex];
-                    int newG = node.G + 1;
+
+                    // 同じ時間の制約を取得
+                    var range = constraints.Where(c => c.Time == node.Time + 1);
 
                     // 制約に引っかかったらスキップ
-                    if (constraints.Exists(state => state.Node.Index == neighbour.Index && (state.Time == node.Time + 1 || state.Time == -1)))
+                    if (!Constraint::IsConstrained(agentId, node.Index, range))
                     {
                         continue;
                     }
 
-                    // 探索済みであればスキップ
-                    if (closedList.Contains(neighbour))
-                    {
-                        continue;
-                    }
+                    Node next = neighbour.Clone();
 
-                    if (openList.All(n => n.node.Index != neighbour.Index && n.node.Time != neighbour.Time))
-                    {
-                        neighbour.Parent = node;
-                        neighbour.G = newG;
-                        neighbour.H = Heuristic(neighbour, targetNode);
-                        neighbour.Time = node.Time + 1;
+                    next.H = Heuristic(neighbour, targetNode);
+                    next.Time = node.Time + 1;
+                    next.Parent = node;
 
-                        openList.Enqueue((neighbour.F, neighbour));
-                    }
-                    else if (newG < neighbour.G)
-                    {
-                        neighbour.Parent = node;
-                        neighbour.G = newG;
-                    }
-                }
-
-                // 衝突したら待ちを考慮する
-                if (!waitClosedList[node.Index])
-                {
-                    if (constraints.Exists(state => state.Node.Index == node.Index && (state.Time == node.Time + 1 || state.Time == -1)))
-                    {
-                        continue;
-                    }
-
-                    int newG = node.G + 1;
-
-                    Node newNode = node.Clone();
-                    newNode.Parent = node;
-
-                    newNode.Time = node.Time + 1;
-                    newNode.G = newG;
-                    newNode.H = Heuristic(node, targetNode);
-
-                    Debug.Log($"wait {newNode.Index}");
-                    openList.Enqueue((newNode.F, newNode));
-
-                    waitClosedList[node.Index] = true;
+                    openList.Enqueue((next.F, next));
                 }
             }
-
 
             //パスを見つけられなかったらnull
             return null;
         }
+
 
         private float Heuristic(Node nodeA, Node nodeB)
         {
@@ -141,19 +119,6 @@ namespace PathFinder.Solvers.CBS
             {
                 node.Reset();
             }
-        }
-    }
-
-    public class NodeComparer : IEqualityComparer<Node>
-    {
-        public bool Equals(Node a, Node b)
-        {
-            return b != null && a != null && a.Position == b.Position && a.Time == b.Time;
-        }
-
-        public int GetHashCode(Node obj)
-        {
-            return obj.Position.GetHashCode() ^ obj.Time.GetHashCode();
         }
     }
 }

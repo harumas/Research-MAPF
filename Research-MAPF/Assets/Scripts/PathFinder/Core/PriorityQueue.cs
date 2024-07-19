@@ -26,6 +26,15 @@ namespace PathFinder.Core
             _isDescending = isDescending;
         }
 
+        private PriorityQueue(List<KeyValuePair<TKey, TValue>> data, Func<TValue, TKey> keySelector, IComparer<TKey> keyComparer,
+            bool isDescending = true)
+        {
+            _data = data;
+            _keySelector = keySelector;
+            _keyComparer = keyComparer;
+            _isDescending = isDescending;
+        }
+
         public void Enqueue(TValue item)
         {
             _data.Add(new KeyValuePair<TKey, TValue>(_keySelector(item), item));
@@ -80,6 +89,12 @@ namespace PathFinder.Core
         }
 
         public int Count => _data.Count;
+
+        public PriorityQueue<TKey, TValue> Clone()
+        {
+            PriorityQueue<TKey, TValue> newQueue = new PriorityQueue<TKey, TValue>(_data, _keySelector, Comparer<TKey>.Default, _isDescending);
+            return newQueue;
+        }
 
         public IEnumerator<TValue> GetEnumerator()
         {

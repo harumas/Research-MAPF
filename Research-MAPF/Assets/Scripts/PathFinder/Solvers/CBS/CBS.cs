@@ -14,7 +14,7 @@ namespace PathFinder.Solvers.CBS
     {
         private readonly ConstrainedAStar pathFinder;
         private readonly ConflictFinder conflictFinder;
-        private const int maxSolveCount = 2048;
+        private const int maxSolveCount = 512;
 
         public CBS(Graph graph, List<Node> nodes)
         {
@@ -29,10 +29,10 @@ namespace PathFinder.Solvers.CBS
             ConstraintNode resultNode = null;
 
             //CTのルートノードを作成
-            List<Constraint>[] emptyConstraints = GetEmptyConstraints(agentCount);
-            List<List<Node>> solution = GetSolution(contexts, emptyConstraints);
+            PriorityQueue<int, Constraint> constraints = new PriorityQueue<int, Constraint>(item => item.Time, false);
+            List<List<Node>> solution = GetSolution(contexts, constraints);
             int cost = solution.Sum(path => path.Count);
-            ConstraintNode node = new ConstraintNode(emptyConstraints, solution, cost);
+            ConstraintNode node = new ConstraintNode(constraints, solution, cost);
 
             openList.Add(node);
 
@@ -46,10 +46,10 @@ namespace PathFinder.Solvers.CBS
                 node = GetMinCostNode(openList);
                 openList.Remove(node);
 
-                List<Conflict> conflicts = conflictFinder.GetConflicts(node.Solution);
+                Conflict conflict = conflictFinder.GetConflicts(node.Solution);
 
                 //衝突がなかったら終了
-                if (conflicts.Count == 0)
+                if (conflict == null)
                 {
                     //探索結果が0 or 前の結果より小さいコストのSolutionが見つかった
                     if (resultNode == null || node.Cost < resultNode.Cost)
@@ -60,60 +60,53 @@ namespace PathFinder.Solvers.CBS
                     continue;
                 }
 
-                foreach (Conflict conflict in conflicts)
+                foreach (int agentID in conflict.Agents)
                 {
-                    foreach (int agentID in conflict.Agents)
+                    // 前の制約のコピー
+                    PriorityQueue<int, Constraint> newConstraints = constraints.Clone();
+
+                    // 制約の追加
+                    newConstraints.Enqueue(new Constraint(agentID, conflict.Node, conflict.Time));
+
+                    StringBuilder bu = new StringBuilder();
+
+                    foreach (Constraint co in newConstraints)
                     {
-                        // 前の制約のコピー
-                        List<Constraint>[] newConstraints = new List<Constraint>[agentCount];
-                        for (int i = 0; i < newConstraints.Length; i++)
-                        {
-                            newConstraints[i] = new List<Constraint>(node.Constraints[i]);
-                        }
-
-                        // 制約の追加
-                        newConstraints[agentID].Add(new Constraint(conflict.Node, conflict.Time));
-
-                        StringBuilder bu = new StringBuilder();
-                        
-                        foreach (Constraint co in newConstraints[agentID])
-                        {
-                            bu.Append($"{{{agentID}, {co.Node.Index}, {co.Time}}}\n");
-                        }
-
-                        Debug.Log(bu.ToString());
-
-                        // 新しい制約を元に解決
-                        List<List<Node>> newSolution = GetSolution(contexts, newConstraints, agentID);
-
-                        // 解決できなかった場合はスキップ
-                        if (newSolution.Any(sol => sol == null))
-                        {
-                            Debug.Log("end");
-                            continue;
-                        }
-
-                        StringBuilder builder = new StringBuilder();
-
-                        foreach (List<Node> nodes in newSolution)
-                        {
-                            builder.Append("{");
-                            foreach (Node n in nodes)
-                            {
-                                builder.Append($"{n.Index:000}, ");
-                            }
-
-                            builder.Append("}");
-                            Debug.Log(builder.ToString());
-                            builder.Clear();
-                        }
-
-                        int newCost = solution.Sum(path => path.Count);
-
-                        // 解決したノードを追加
-                        ConstraintNode newNode = new ConstraintNode(newConstraints, newSolution, newCost);
-                        openList.Add(newNode);
+                        bu.Append($"{{{agentID}, {co.Node.Index}, {co.Time}}}\n");
                     }
+
+                    Debug.Log(bu.ToString());
+
+                    // 新しい制約を元に解決
+                    List<List<Node>> newSolution = GetSolution(contexts, newConstraints);
+
+                    // 解決できなかった場合はスキップ
+                    if (newSolution.Any(sol => sol == null))
+                    {
+                        Debug.Log("end");
+                        continue;
+                    }
+
+                    StringBuilder builder = new StringBuilder();
+
+                    foreach (List<Node> nodes in newSolution)
+                    {
+                        builder.Append("{");
+                        foreach (Node n in nodes)
+                        {
+                            builder.Append($"{n.Index:000}, ");
+                        }
+
+                        builder.Append("}");
+                        Debug.Log(builder.ToString());
+                        builder.Clear();
+                    }
+
+                    int newCost = solution.Sum(path => path.Count);
+
+                    // 解決したノードを追加
+                    ConstraintNode newNode = new ConstraintNode(newConstraints, newSolution, newCost);
+                    openList.Add(newNode);
                 }
             }
 
@@ -155,49 +148,18 @@ namespace PathFinder.Solvers.CBS
 
         private List<List<Node>> GetSolution(
             List<SolveContext> contexts,
-            List<Constraint>[] constraints,
-            int currentAgent = -1
+            PriorityQueue<int, Constraint> constraints
         )
         {
             List<List<Node>> solution = new List<List<Node>>();
-            List<Node> constrainedPath = new List<Node>();
 
-            // solve constraint agent first
-            if (currentAgent != -1)
+            foreach (SolveContext context in contexts)
             {
-                SolveContext context = contexts[currentAgent];
-                constrainedPath = pathFinder.FindPath(context.Start, context.Goal, constraints[currentAgent]);
-            }
-
-            // solve the rest of the agents
-            for (int i = 0; i < constraints.Length; i++)
-            {
-                if (currentAgent == -1 || i != currentAgent)
-                {
-                    SolveContext context = contexts[i];
-                    List<Node> path = pathFinder.FindPath(context.Start, context.Goal, constraints[i]);
-                    solution.Add(path);
-                }
-
-                if (currentAgent != -1 && i == currentAgent)
-                {
-                    solution.Add(constrainedPath);
-                }
+                List<Node> path = pathFinder.FindPath(context.AgentIndex, context.Start, context.Goal, constraints);
+                solution.Add(path);
             }
 
             return solution;
-        }
-
-        private List<Constraint>[] GetEmptyConstraints(int count)
-        {
-            List<Constraint>[] constraints = new List<Constraint>[count];
-
-            for (int i = 0; i < constraints.Length; i++)
-            {
-                constraints[i] = new List<Constraint>();
-            }
-
-            return constraints;
         }
     }
 }

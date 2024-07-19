@@ -5,10 +5,8 @@ namespace PathFinder.Solvers.CBS
 {
     public class ConflictFinder
     {
-        public List<Conflict> GetConflicts(List<List<Node>> paths)
+        public Conflict GetConflicts(List<List<Node>> paths)
         {
-            List<Conflict> conflicts = new List<Conflict>();
-
             bool conflictFound = false;
             bool agentLeft = false;
 
@@ -35,35 +33,8 @@ namespace PathFinder.Solvers.CBS
                             //同じ時間に同じマスに存在する場合(vertex conflict)
                             if (TryConflictSameTime(paths, t, i, j, out Conflict tConflict))
                             {
-                                conflicts.Add(tConflict);
-                                conflictFound = true;
-                                continue;
+                                return tConflict;
                             }
-
-                            //すれ違ったら
-                            if (TryConflictCrossing(paths, t, i, j, out Conflict cConflictI, out Conflict cConflictJ))
-                            {
-                                conflicts.Add(cConflictI);
-                                conflicts.Add(cConflictJ);
-                                conflictFound = true;
-                                continue;
-                            }
-
-                            //同じマスに入れ違いになったら(following conflict)
-                            // if (TryConflictFollow(paths, t, i, j, out Conflict fConflict))
-                            // {
-                            //     conflicts.Add(fConflict);
-                            //     conflictFound = true;
-                            //     continue;
-                            // }
-                        }
-
-                        if (TryStaticConflict(paths, t, i, j, out Conflict sConflictI, out Conflict sConflictJ))
-                        {
-                            conflicts.Add(sConflictI);
-                            conflicts.Add(sConflictJ);
-                            conflictFound = true;
-                            continue;
                         }
                     }
                 }
@@ -71,7 +42,7 @@ namespace PathFinder.Solvers.CBS
                 if (!agentLeft) break;
             }
 
-            return conflicts;
+            return null;
         }
 
         private bool TryConflictSameTime(List<List<Node>> paths, int t, int i, int j, out Conflict conflict)

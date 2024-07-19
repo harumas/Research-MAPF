@@ -12,9 +12,8 @@ namespace PathFinder.Core
         public readonly Vector2 Position;
 
         public int Time { get; set; }
-        public int G { get; set; }
         public float H { get; set; }
-        public float F => G + H;
+        public float F => Time + H;
         public Node Parent { get; set; }
 
         public Node(int index, Vector2 position)
@@ -25,13 +24,12 @@ namespace PathFinder.Core
 
         public Node Clone()
         {
-            return new Node(Index, Position) { Time = Time, G = G, H = H, Parent = Parent };
+            return new Node(Index, Position) { Time = Time, H = H, Parent = Parent };
         }
 
         public void Reset()
         {
             Time = 0;
-            G = 0;
             H = 0;
             Parent = null;
         }
