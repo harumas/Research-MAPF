@@ -7,17 +7,16 @@ namespace PathFinder.Solvers.CBS
     {
         public Conflict GetConflicts(List<List<Node>> paths)
         {
-            bool conflictFound = false;
             bool agentLeft = false;
 
             //時間tにおいて
-            for (int t = 0; !conflictFound; t++, agentLeft = false)
+            for (int t = 0;; t++, agentLeft = false)
             {
                 //エージェントiと
-                for (int i = 0; i < paths.Count && !conflictFound; i++)
+                for (int i = 0; i < paths.Count; i++)
                 {
                     //エージェントjの比較
-                    for (int j = i + 1; j < paths.Count && !conflictFound; j++)
+                    for (int j = i + 1; j < paths.Count; j++)
                     {
                         //同じエージェントは比較しない
                         if (i == j)
@@ -35,6 +34,11 @@ namespace PathFinder.Solvers.CBS
                             {
                                 return tConflict;
                             }
+                        }
+
+                        if (TryStaticConflict(paths, t, i, j, out Conflict sConflict))
+                        {
+                            return sConflict;
                         }
                     }
                 }
@@ -114,40 +118,31 @@ namespace PathFinder.Solvers.CBS
             return false;
         }
 
-        private bool TryStaticConflict(List<List<Node>> paths, int t, int i, int j, out Conflict conflictI, out Conflict conflictJ)
+        private bool TryStaticConflict(List<List<Node>> paths, int t, int i, int j, out Conflict conflict)
         {
-            if (t > 0 && t < paths[j].Count && t >= paths[i].Count && paths[j][t].Index == paths[i][paths[i].Count - 1].Index)
+            if (t < paths[j].Count && t >= paths[i].Count && paths[j][t].Index == paths[i][paths[i].Count - 1].Index)
             {
-                Node conflictNode = paths[i][paths[i].Count - 1];
+                Node conflictNode = paths[j][t];
 
-                List<int> curAgents = new List<int>();
-                curAgents.Add(i);
-                conflictI = new Conflict(curAgents, conflictNode, paths[i].Count - 1);
-
-                curAgents = new List<int>();
-                curAgents.Add(j);
-                conflictJ = new Conflict(curAgents, conflictNode, -1);
+                List<int> agents = new List<int>();
+                agents.Add(j);
+                conflict = new Conflict(agents, conflictNode, t);
 
                 return true;
             }
 
-            if (t > 0 && t < paths[i].Count && t >= paths[j].Count && paths[i][t].Index == paths[j][paths[j].Count - 1].Index)
+            if (t < paths[i].Count && t >= paths[j].Count && paths[i][t].Index == paths[j][paths[j].Count - 1].Index)
             {
-                Node conflictNode = paths[j][paths[j].Count - 1];
+                Node conflictNode = paths[i][t];
 
-                List<int> curAgents = new List<int>();
-                curAgents.Add(i);
-                conflictI = new Conflict(curAgents, conflictNode, -1);
-
-                curAgents = new List<int>();
-                curAgents.Add(j);
-                conflictJ = new Conflict(curAgents, conflictNode, paths[j].Count - 1);
+                List<int> agents = new List<int>();
+                agents.Add(i);
+                conflict = new Conflict(agents, conflictNode, t);
 
                 return true;
             }
 
-            conflictI = null;
-            conflictJ = null;
+            conflict = null;
             return false;
         }
     }

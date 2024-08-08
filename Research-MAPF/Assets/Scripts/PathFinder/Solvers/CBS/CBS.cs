@@ -14,7 +14,6 @@ namespace PathFinder.Solvers.CBS
     {
         private readonly ConstrainedAStar pathFinder;
         private readonly ConflictFinder conflictFinder;
-        private const int maxSolveCount = 512;
 
         public CBS(Graph graph, List<Node> nodes)
         {
@@ -24,8 +23,6 @@ namespace PathFinder.Solvers.CBS
 
         public List<(int agentIndex, List<int> path)> Solve(List<SolveContext> contexts)
         {
-            int agentCount = contexts.Count;
-            List<ConstraintNode> openList = new List<ConstraintNode>();
             ConstraintNode resultNode = null;
 
             //CTのルートノードを作成
@@ -34,17 +31,13 @@ namespace PathFinder.Solvers.CBS
             int cost = solution.Sum(path => path.Count);
             ConstraintNode node = new ConstraintNode(constraints, solution, cost);
 
-            openList.Add(node);
+            //オープンリストにルートを追加
+            PriorityQueue<int, ConstraintNode> q = new PriorityQueue<int, ConstraintNode>(item => item.Cost, false);
+            q.Enqueue(node);
 
-            int solveCount = 0;
-
-            // maxSolveCountを超えたら探索終了
-            while (openList.Count > 0 && solveCount <= maxSolveCount)
+            while (q.Count > 0)
             {
-                solveCount++;
-
-                node = GetMinCostNode(openList);
-                openList.Remove(node);
+                node = q.Dequeue();
 
                 Conflict conflict = conflictFinder.GetConflicts(node.Solution);
 
@@ -59,6 +52,8 @@ namespace PathFinder.Solvers.CBS
 
                     continue;
                 }
+
+                Debug.Log(conflict.ToString());
 
                 foreach (int agentID in conflict.Agents)
                 {
@@ -87,26 +82,11 @@ namespace PathFinder.Solvers.CBS
                         continue;
                     }
 
-                    StringBuilder builder = new StringBuilder();
-
-                    foreach (List<Node> nodes in newSolution)
-                    {
-                        builder.Append("{");
-                        foreach (Node n in nodes)
-                        {
-                            builder.Append($"{n.Index:000}, ");
-                        }
-
-                        builder.Append("}");
-                        Debug.Log(builder.ToString());
-                        builder.Clear();
-                    }
-
                     int newCost = solution.Sum(path => path.Count);
 
                     // 解決したノードを追加
                     ConstraintNode newNode = new ConstraintNode(newConstraints, newSolution, newCost);
-                    openList.Add(newNode);
+                    q.Enqueue(newNode);
                 }
             }
 
@@ -126,24 +106,6 @@ namespace PathFinder.Solvers.CBS
             }
 
             return results;
-        }
-
-        private static ConstraintNode GetMinCostNode(List<ConstraintNode> nodes)
-        {
-            ConstraintNode node = nodes[0];
-            for (int i = 1; i < nodes.Count; i++)
-            {
-                if (nodes[i].Cost < node.Cost)
-                {
-                    node = nodes[i];
-                }
-                else if (nodes[i].Cost == node.Cost && nodes[i].GetConstraintsCount() < node.GetConstraintsCount())
-                {
-                    node = nodes[i];
-                }
-            }
-
-            return node;
         }
 
         private List<List<Node>> GetSolution(

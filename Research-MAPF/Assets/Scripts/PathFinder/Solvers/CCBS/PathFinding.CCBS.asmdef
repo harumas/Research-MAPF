@@ -1,12 +1,8 @@
 {
-    "name": "PathFinding.Visualizer",
+    "name": "PathFinding.CCBS",
     "rootNamespace": "",
     "references": [
-        "GUID:a82605be56c1c184386c530c18c19eea",
-        "GUID:7b8ec7f6800012f459ce15abaa25137e",
-        "GUID:5f56e07fc20fffe44a8f398792d1cac5",
-        "GUID:256826d619d3e74459d0d39bb2936f64",
-        "GUID:1870cc20f5de5da4394f0d291232b302"
+        "GUID:5f56e07fc20fffe44a8f398792d1cac5"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

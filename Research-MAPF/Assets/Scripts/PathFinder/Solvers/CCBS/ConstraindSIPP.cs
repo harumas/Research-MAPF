@@ -1,23 +1,72 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using PathFinder.Core;
 using UnityEngine;
 
-namespace PathFinder.Solvers.CBS
+namespace PathFinder.Solvers.CCBS
 {
-    /// <summary>
-    /// 制約を考慮するA*アルゴリズム
-    /// </summary>
-    public class ConstrainedAStar
+    public class ConstraindSIPP
     {
         private readonly Graph graph;
         private readonly List<Node> nodes;
+        private readonly List<SafeInterval>[] intervals;
 
-        public ConstrainedAStar(Graph graph, List<Node> nodes)
+        public ConstraindSIPP(Graph graph, List<Node> nodes)
         {
             this.graph = graph;
             this.nodes = nodes;
+            intervals = new List<SafeInterval>[graph.NodeCount];
+        }
+
+        public void ConstructInterval(List<List<int>> obstaclePath)
+        {
+            int maxTime = obstaclePath.Max(p => p.Count);
+            BitArray[] conflictArray = new BitArray[maxTime];
+
+            //時刻tにおける衝突情報を作る
+            for (int t = 0; t < maxTime; t++)
+            {
+                conflictArray[t] = new BitArray(graph.NodeCount);
+
+                foreach (List<int> path in obstaclePath)
+                {
+                    if (t < path.Count)
+                    {
+                        //時間tのパスのノードの場所を衝突したことにする
+                        conflictArray[t][path[t]] = true;
+                    }
+                }
+            }
+
+            for (int i = 0; i < graph.NodeCount; i++)
+            {
+                intervals[i] = new List<SafeInterval>();
+
+                int start = -1;
+                for (int t = 0; t < maxTime; t++)
+                {
+                    bool isSafe = !conflictArray[t][i];
+
+                    if (isSafe && start == -1)
+                    {
+                        start = t;
+                    }
+
+                    if (!isSafe && start != -1)
+                    {
+                        int end = t - 1;
+                        intervals[i].Add(new SafeInterval(start, end));
+                        start = -1;
+                    }
+                }
+
+                if (start != -1)
+                {
+                    intervals[i].Add(new SafeInterval(start, maxTime - 1));
+                }
+            }
         }
 
         public List<Node> FindPath(

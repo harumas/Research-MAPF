@@ -36,7 +36,8 @@ namespace Visualiser
             var solvers = new Dictionary<FindStrategy, ISolver>()
             {
                 { FindStrategy.NormalBFS, new NormalBFS(graph, nodes) },
-                { FindStrategy.CBS, new CBS(graph, nodes) }
+                { FindStrategy.CBS, new CBS(graph, nodes) },
+                { FindStrategy.CCBS, new CCBS(graph, nodes) }
             };
 
             return solvers;

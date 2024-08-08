@@ -10,7 +10,8 @@ namespace Visualiser
     public enum FindStrategy
     {
         NormalBFS,
-        CBS
+        CBS,
+        CCBS
     }
 
     public class Starter : MonoBehaviour
